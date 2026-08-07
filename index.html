@@ -66,7 +66,7 @@
     position:relative; background:var(--card); border-radius:16px; overflow:hidden;
     box-shadow:0 1px 3px rgba(0,0,0,0.04); transition:transform .12s ease;
   }
-  .card:hover { transform:translateY(-2px); }
+  @media (hover: hover) { .card:hover { transform:translateY(-2px); } }
   .go { text-decoration:none; color:inherit; display:flex; flex-direction:column; height:100%; }
   .del {
     position:absolute; top:8px; right:8px; z-index:2;
@@ -75,7 +75,7 @@
     opacity:0; transition:opacity .12s ease, background .12s ease;
     backdrop-filter:blur(4px);
   }
-  .card:hover .del { opacity:1; }
+  @media (hover: hover) { .card:hover .del { opacity:1; } }
   .del:hover { background:var(--danger); }
   .del:focus-visible { opacity:1; outline:2px solid var(--accent); }
 
@@ -86,9 +86,14 @@
     opacity:0; transition:opacity .12s ease, background .12s ease, transform .12s ease;
     backdrop-filter:blur(4px);
   }
-  .card:hover .fav { opacity:1; }
+  @media (hover: hover) { .card:hover .fav { opacity:1; } }
   .fav:hover { background:var(--like); transform:scale(1.12); }
   .fav:focus-visible { opacity:1; outline:2px solid var(--accent); }
+  /* 터치 기기(호버 없음): 버튼 상시 노출, 한 번 탭에 바로 반응 */
+  @media (hover: none) {
+    .del, .fav { opacity:1; width:32px; height:32px; font-size:14px; }
+    .fav { right:48px; }
+  }
   /* 찜한 카드는 마우스를 치워도 하트가 남는다 — 무엇을 골랐는지 한눈에 */
   .card.is-fav .fav { opacity:1; background:var(--like); }
   .card.is-fav { box-shadow:0 0 0 2px var(--like); }
@@ -158,7 +163,7 @@
 
   <div class="brand"><svg class="moa-char" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 72" width="26" height="26" shape-rendering="crispEdges"><g fill="var(--accent)"><rect x="16" y="0" width="8" height="8"/><rect x="24" y="0" width="8" height="8"/><rect x="32" y="0" width="8" height="8"/><rect x="40" y="0" width="8" height="8"/><rect x="48" y="0" width="8" height="8"/><rect x="56" y="0" width="8" height="8"/><rect x="64" y="0" width="8" height="8"/><rect x="72" y="0" width="8" height="8"/><rect x="8" y="8" width="8" height="8"/><rect x="16" y="8" width="8" height="8"/><rect x="24" y="8" width="8" height="8"/><rect x="32" y="8" width="8" height="8"/><rect x="40" y="8" width="8" height="8"/><rect x="48" y="8" width="8" height="8"/><rect x="56" y="8" width="8" height="8"/><rect x="64" y="8" width="8" height="8"/><rect x="72" y="8" width="8" height="8"/><rect x="80" y="8" width="8" height="8"/><rect x="0" y="16" width="8" height="8"/><rect x="8" y="16" width="8" height="8"/><rect x="16" y="16" width="8" height="8"/><rect x="24" y="16" width="8" height="8"/><rect x="32" y="16" width="8" height="8"/><rect x="40" y="16" width="8" height="8"/><rect x="48" y="16" width="8" height="8"/><rect x="56" y="16" width="8" height="8"/><rect x="64" y="16" width="8" height="8"/><rect x="72" y="16" width="8" height="8"/><rect x="80" y="16" width="8" height="8"/><rect x="88" y="16" width="8" height="8"/><rect x="0" y="24" width="8" height="8"/><rect x="8" y="24" width="8" height="8"/><rect x="16" y="24" width="8" height="8"/><rect x="32" y="24" width="8" height="8"/><rect x="40" y="24" width="8" height="8"/><rect x="48" y="24" width="8" height="8"/><rect x="56" y="24" width="8" height="8"/><rect x="72" y="24" width="8" height="8"/><rect x="80" y="24" width="8" height="8"/><rect x="88" y="24" width="8" height="8"/><rect x="0" y="32" width="8" height="8"/><rect x="8" y="32" width="8" height="8"/><rect x="16" y="32" width="8" height="8"/><rect x="32" y="32" width="8" height="8"/><rect x="40" y="32" width="8" height="8"/><rect x="48" y="32" width="8" height="8"/><rect x="56" y="32" width="8" height="8"/><rect x="72" y="32" width="8" height="8"/><rect x="80" y="32" width="8" height="8"/><rect x="88" y="32" width="8" height="8"/><rect x="0" y="40" width="8" height="8"/><rect x="8" y="40" width="8" height="8"/><rect x="16" y="40" width="8" height="8"/><rect x="24" y="40" width="8" height="8"/><rect x="32" y="40" width="8" height="8"/><rect x="40" y="40" width="8" height="8"/><rect x="48" y="40" width="8" height="8"/><rect x="56" y="40" width="8" height="8"/><rect x="64" y="40" width="8" height="8"/><rect x="72" y="40" width="8" height="8"/><rect x="80" y="40" width="8" height="8"/><rect x="88" y="40" width="8" height="8"/><rect x="8" y="48" width="8" height="8"/><rect x="16" y="48" width="8" height="8"/><rect x="24" y="48" width="8" height="8"/><rect x="32" y="48" width="8" height="8"/><rect x="40" y="48" width="8" height="8"/><rect x="48" y="48" width="8" height="8"/><rect x="56" y="48" width="8" height="8"/><rect x="64" y="48" width="8" height="8"/><rect x="72" y="48" width="8" height="8"/><rect x="80" y="48" width="8" height="8"/><rect x="16" y="56" width="8" height="8"/><rect x="24" y="56" width="8" height="8"/><rect x="64" y="56" width="8" height="8"/><rect x="72" y="56" width="8" height="8"/><rect x="8" y="64" width="8" height="8"/><rect x="16" y="64" width="8" height="8"/><rect x="72" y="64" width="8" height="8"/><rect x="80" y="64" width="8" height="8"/></g><g class="moa-eyes" fill="var(--card)"><rect x="24" y="24" width="8" height="8"/><rect x="64" y="24" width="8" height="8"/><rect x="24" y="32" width="8" height="8"/><rect x="64" y="32" width="8" height="8"/></g><g class="moa-spark" fill="#f7b731"><rect x="0" y="0" width="8" height="8"/><rect x="88" y="0" width="8" height="8"/></g></svg><span>모아</span></div>
   <h1 class="page-title">A daily dose of design<br>and photography references</h1>
-  <div class="hello-sub">매일 13곳에서 볼 만한 것만 모아 와요 · <span id="stamp">08/07 (Fri) 16:14</span> 수집 · 새 글 0건</div>
+  <div class="hello-sub">매일 13곳에서 볼 만한 것만 모아 와요 · <span id="stamp">08/07 (Fri) 18:33</span> 수집 · 새 글 0건</div>
 
   <div class="pick">
     <div class="pick-head">
