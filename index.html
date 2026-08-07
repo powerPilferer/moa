@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>모아 — 디자인 레퍼런스</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page:#f2f4f6; --card:#fff; --text:#191f28; --sub:#6b7684; --muted:#8b95a1;
+    --chip:#f2f4f6; --line:#e9ecef; --accent:#3182f6; --danger:#f04452; --like:#ff4d8d;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+      --page:#101013; --card:#17171c; --text:#fff; --sub:#9ea4ad; --muted:#7a828c;
+      --chip:#22222a; --line:#22222a; --accent:#5a9cf8; --danger:#f36470; --like:#ff6ea3;
+    }
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background:var(--page); color:var(--text); line-height:1.5;
+    padding:24px 16px 96px; -webkit-font-smoothing:antialiased;
+  }
+  .wrap { max-width:1080px; margin:0 auto; }
+  .hello { font-size:22px; font-weight:800; letter-spacing:-0.02em; }
+  .hello-sub { font-size:13px; color:var(--sub); margin-top:4px; }
+
+  .pick {
+    background:var(--card); border-radius:20px; padding:18px; margin-top:20px;
+    box-shadow:0 1px 3px rgba(0,0,0,0.04);
+  }
+  .pick-head { display:flex; align-items:center; gap:10px; }
+  .pick-emoji {
+    width:40px; height:40px; border-radius:14px; background:var(--chip);
+    display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0;
+  }
+  .pick-title { font-size:15px; font-weight:700; }
+  .pick-tag { font-size:12px; color:var(--muted); }
+  .pick-body { font-size:13.5px; color:var(--sub); margin-top:10px; }
+  .pick-body b { color:var(--text); font-weight:600; }
+  .pick-body a { color:var(--accent); text-decoration:none; }
+  .pick-body a:hover { text-decoration:underline; }
+
+  .err {
+    margin-top:12px; padding:10px 14px; border-radius:12px; background:var(--card);
+    font-size:12.5px; color:var(--sub);
+  }
+
+  .sec { font-size:16px; font-weight:700; margin:26px 0 10px 4px; }
+  .sec .n { font-weight:400; font-size:12px; color:var(--muted); margin-left:6px; }
+
+  .grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(240px,1fr)); gap:14px; }
+  .card {
+    position:relative; background:var(--card); border-radius:16px; overflow:hidden;
+    box-shadow:0 1px 3px rgba(0,0,0,0.04); transition:transform .12s ease;
+  }
+  .card:hover { transform:translateY(-2px); }
+  .go { text-decoration:none; color:inherit; display:flex; flex-direction:column; height:100%; }
+  .del {
+    position:absolute; top:8px; right:8px; z-index:2;
+    width:28px; height:28px; border:0; border-radius:50%; cursor:pointer;
+    background:rgba(0,0,0,0.55); color:#fff; font-size:13px; line-height:1;
+    opacity:0; transition:opacity .12s ease, background .12s ease;
+    backdrop-filter:blur(4px);
+  }
+  .card:hover .del { opacity:1; }
+  .del:hover { background:var(--danger); }
+  .del:focus-visible { opacity:1; outline:2px solid var(--accent); }
+
+  .fav {
+    position:absolute; top:8px; right:42px; z-index:2;
+    width:28px; height:28px; border:0; border-radius:50%; cursor:pointer;
+    background:rgba(0,0,0,0.55); color:#fff; font-size:13px; line-height:1;
+    opacity:0; transition:opacity .12s ease, background .12s ease, transform .12s ease;
+    backdrop-filter:blur(4px);
+  }
+  .card:hover .fav { opacity:1; }
+  .fav:hover { background:var(--like); transform:scale(1.12); }
+  .fav:focus-visible { opacity:1; outline:2px solid var(--accent); }
+  /* 찜한 카드는 마우스를 치워도 하트가 남는다 — 무엇을 골랐는지 한눈에 */
+  .card.is-fav .fav { opacity:1; background:var(--like); }
+  .card.is-fav { box-shadow:0 0 0 2px var(--like); }
+
+  .thumb { aspect-ratio:16/10; background:var(--chip); overflow:hidden; }
+  .thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+  .noimg { width:100%; height:100%; display:flex; align-items:center; justify-content:center;
+            font-size:26px; opacity:.35; }
+  .meta { padding:12px 14px 14px; }
+  .src { font-size:11.5px; font-weight:700; color:var(--accent); }
+  .src .tag { font-weight:400; color:var(--muted); margin-left:4px; }
+  .title { font-size:13.5px; font-weight:600; margin-top:4px;
+            display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+  .orig { font-size:11px; color:var(--muted); margin-top:3px; line-height:1.35;
+           display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  .summary { font-size:12px; color:var(--muted); margin-top:5px; line-height:1.5;
+              display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+  .date { font-size:11.5px; color:var(--muted); margin-top:6px; }
+
+  .bar {
+    position:fixed; left:50%; bottom:20px; transform:translateX(-50%);
+    display:none; align-items:center; gap:12px; z-index:10;
+    background:var(--card); border:1px solid var(--line); border-radius:999px;
+    padding:10px 12px 10px 18px; box-shadow:0 6px 24px rgba(0,0,0,0.18);
+    font-size:13px; max-width:calc(100vw - 32px);
+  }
+  .bar b { color:var(--danger); }
+  .bar b.n-fav { color:var(--like); }
+  .bar button {
+    border:0; border-radius:999px; cursor:pointer; font-size:12.5px; font-weight:600;
+    padding:7px 14px; font-family:inherit;
+  }
+  #bar-only { background:var(--chip); color:var(--text); }
+  #bar-only.on { background:var(--like); color:#fff; }
+  #bar-undo { background:var(--chip); color:var(--text); }
+  #bar-save { background:var(--accent); color:#fff; }
+  #bar-msg { font-size:12px; color:var(--muted); }
+
+  .foot { margin-top:28px; text-align:center; font-size:11.5px; color:var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hello">모아 🗂</div>
+  <div class="hello-sub">디자인 레퍼런스 · <span id="stamp">08/07 (Fri) 14:22</span> 수집 · 새 글 0건</div>
+
+  <div class="pick">
+    <div class="pick-head">
+      <div class="pick-emoji">👀</div>
+      <div>
+        <div class="pick-title">오늘의 눈에 띈 것</div>
+        <div class="pick-tag" id="pick-tag">아직 큐레이션 전이에요</div>
+      </div>
+    </div>
+    <div class="pick-body" id="pick-body">
+      모아가 아직 오늘의 코멘트를 남기지 않았어요. 아래 카드는 방금 수집한 최신 글이에요.
+    </div>
+  </div>
+
+  
+
+  <div class="block">
+    <div class="sec">최근 수집<span class="n">60건 · 카드에 마우스를 올리면 ♥로 찜하거나 ✕로 지울 수 있어요</span></div>
+    <div class="grid">
+      <div class="card" data-link="https://www.designboom.com/technology/tiny-vinyl-player-turntable-four-inch-records/" data-title="4인치 미니 레코드를 돌리는 초소형 턴테이블" data-source="Designboom" data-tag="디자인 전반" data-image="https://www.designboom.com/wp-content/uploads/2026/08/tiny-vinyl-player-turntable-four-inch-records-designboom-2-500x400-22b08q85r680.jpeg" data-date="2026-08-07">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://www.designboom.com/technology/tiny-vinyl-player-turntable-four-inch-records/" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://www.designboom.com/wp-content/uploads/2026/08/tiny-vinyl-player-turntable-four-inch-records-designboom-2-500x400-22b08q85r680.jpeg" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">Designboom <span class="tag">디자인 전반</span></div>
+            <div class="title">4인치 미니 레코드를 돌리는 초소형 턴테이블</div>
+            <div class="orig">tiny vinyl player spins four-inch records on a miniature turntable</div>
+            <div class="summary">벨트 드라이브 방식의 초소형 턴테이블 — 내장 스피커와 블루투스로 4인치 레코드를 재생한다.</div>
+            <div class="date">2026-08-07</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://www.designboom.com/architecture/triangulated-steel-lattice-gateway-barcelona-logistics-park-mias-architects/" data-title="바르셀로나 물류단지의 새 관문 — 삼각 격자 강구조 (MIAS Architects)" data-source="Designboom" data-tag="디자인 전반" data-image="https://www.designboom.com/wp-content/uploads/2026/08/mias-architects-new-access-gateway-zona-franca-logistics-park-barcelona-designboom-700-1-500x400-22b08q85r068.jpg" data-date="2026-08-07">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://www.designboom.com/architecture/triangulated-steel-lattice-gateway-barcelona-logistics-park-mias-architects/" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://www.designboom.com/wp-content/uploads/2026/08/mias-architects-new-access-gateway-zona-franca-logistics-park-barcelona-designboom-700-1-500x400-22b08q85r068.jpg" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">Designboom <span class="tag">디자인 전반</span></div>
+            <div class="title">바르셀로나 물류단지의 새 관문 — 삼각 격자 강구조 (MIAS Architects)</div>
+            <div class="orig">triangulated steel lattice redefines new gateway to barcelona’s logistics park</div>
+            <div class="summary">MIAS Architects가 단지 입구를 건축적 문턱으로 재해석해 일상적 이동의 풍경을 프레임에 담는다.</div>
+            <div class="date">2026-08-07</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://www.designboom.com/design/water-glasses-colorful-frameless-eyewear-wearable-sculpture-xyz/" data-title="Water Glasses — 프레임을 없애고 끈으로 꿴 무테 선글라스" data-source="Designboom" data-tag="디자인 전반" data-image="https://www.designboom.com/wp-content/uploads/2026/08/water-glasses-colorful-frameless-eyewear-wearable-sculpture-xyz-designboom-12-500x400-22b08q85r857.jpeg" data-date="2026-08-07">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://www.designboom.com/design/water-glasses-colorful-frameless-eyewear-wearable-sculpture-xyz/" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://www.designboom.com/wp-content/uploads/2026/08/water-glasses-colorful-frameless-eyewear-wearable-sculpture-xyz-designboom-12-500x400-22b08q85r857.jpeg" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">Designboom <span class="tag">디자인 전반</span></div>
+            <div class="title">Water Glasses — 프레임을 없애고 끈으로 꿴 무테 선글라스</div>
+            <div class="orig">water glasses turn colorful frameless eyewear into wearable sculpture</div>
+            <div class="summary">프레임 없는 렌즈를 색색의 파라코드로 꿰어 물놀이용 아이웨어를 착용하는 조각으로 만들었다.</div>
+            <div class="date">2026-08-07</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://www.dezeen.com/2026/08/06/dezeen-agenda-decoy-font-ai-mixfont/" data-title="Dezeen Agenda — AI를 속이는 Decoy Font" data-source="Dezeen" data-tag="건축·공간" data-image="http://static.dezeen.com/uploads/2026/08/decoy-font-mixfont-eric-lu-design_dezeen_2364_col_555_square-411x411.jpg" data-date="2026-08-07">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://www.dezeen.com/2026/08/06/dezeen-agenda-decoy-font-ai-mixfont/" target="_blank" rel="noopener">
+          <div class="thumb"><img src="http://static.dezeen.com/uploads/2026/08/decoy-font-mixfont-eric-lu-design_dezeen_2364_col_555_square-411x411.jpg" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">Dezeen <span class="tag">건축·공간</span></div>
+            <div class="title">Dezeen Agenda — AI를 속이는 Decoy Font</div>
+            <div class="orig">Dezeen Agenda features Decoy Font designed to trick AI</div>
+            <div class="summary">AI 챗봇을 속이도록 설계된 착시 폰트가 이번 주 뉴스레터의 메인 소식.</div>
+            <div class="date">2026-08-07</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://abduzeedo.com/ai-design-introducing-adobe-chatgpt/" data-title="Adobe for ChatGPT — 챗GPT 안에서 쓰는 어도비" data-source="Abduzeedo" data-tag="그래픽·브랜딩" data-image="https://cms.abduzeedo.com/sites/default/files/originals/hero_introducing-adobe-chatgpt-create-edit-get-work-deepti-pradeep.jpg" data-date="2026-08-07">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://abduzeedo.com/ai-design-introducing-adobe-chatgpt/" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://cms.abduzeedo.com/sites/default/files/originals/hero_introducing-adobe-chatgpt-create-edit-get-work-deepti-pradeep.jpg" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">Abduzeedo <span class="tag">그래픽·브랜딩</span></div>
+            <div class="title">Adobe for ChatGPT — 챗GPT 안에서 쓰는 어도비</div>
+            <div class="orig">AI Design: Introducing Adobe for ChatGPT</div>
+            <div class="summary">포토샵·Firefly·Express의 프로급 도구 70여 개를 챗GPT 안에서 바로 부르는 AI 디자인 워크플로.</div>
+            <div class="date">2026-08-07</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://www.dezeen.com/2026/08/06/leckie-studio-twin-peaks-house-vancouver/" data-title="은빛으로 바랜 목재로 감싼 밴쿠버 숲속 주택 (Leckie Studio)" data-source="Dezeen" data-tag="건축·공간" data-image="http://static.dezeen.com/uploads/2026/08/twin-peaks-house-leckie-studio-vancouver_dezeen_2364_sq4-411x411.jpg" data-date="2026-08-07">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://www.dezeen.com/2026/08/06/leckie-studio-twin-peaks-house-vancouver/" target="_blank" rel="noopener">
+          <div class="thumb"><img src="http://static.dezeen.com/uploads/2026/08/twin-peaks-house-leckie-studio-vancouver_dezeen_2364_sq4-411x411.jpg" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">Dezeen <span class="tag">건축·공간</span></div>
+            <div class="title">은빛으로 바랜 목재로 감싼 밴쿠버 숲속 주택 (Leckie Studio)</div>
+            <div class="orig">Leckie Studio tucks house clad in &quot;silvered wood&quot; into forested Vancouver site</div>
+            <div class="summary">비대칭 지붕과 은빛으로 바랜 목재 외장으로 숲 지형에 스며드는 Twin Peaks House.</div>
+            <div class="date">2026-08-07</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://www.designboom.com/architecture/bamboo-pier-pattani-fishermen-community-hub-thailand-has/" data-title="대나무 잔교 — 태국 빠따니 어촌의 새 공공 수변공간" data-source="Designboom" data-tag="디자인 전반" data-image="https://www.designboom.com/wp-content/uploads/2026/08/HAS-pattani-fishermen-community-hub-thailand-designboom-700-500x400-22b08q85r485.jpg" data-date="2026-08-07">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://www.designboom.com/architecture/bamboo-pier-pattani-fishermen-community-hub-thailand-has/" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://www.designboom.com/wp-content/uploads/2026/08/HAS-pattani-fishermen-community-hub-thailand-designboom-700-500x400-22b08q85r485.jpg" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">Designboom <span class="tag">디자인 전반</span></div>
+            <div class="title">대나무 잔교 — 태국 빠따니 어촌의 새 공공 수변공간</div>
+            <div class="orig">bamboo pier brings a new public waterfront to the fishermen of pattani, thailand</div>
+            <div class="summary">대나무로 감싼 고상식 철제 데크 — 어부와 수중 생물이 같은 수변을 공유한다.</div>
+            <div class="date">2026-08-07</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://www.creativebloq.com/tech/laptops/want-to-know-which-laptop-you-actually-need-for-your-major-we-got-you" data-title="전공별로 어떤 노트북이 필요한지 정리한 가이드" data-source="Creative Bloq" data-tag="실무·툴" data-image="https://cdn.mos.cms.futurecdn.net/eGg5G4CfrvLKngWd8o7KU6-1280-80.png" data-date="2026-08-07">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://www.creativebloq.com/tech/laptops/want-to-know-which-laptop-you-actually-need-for-your-major-we-got-you" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://cdn.mos.cms.futurecdn.net/eGg5G4CfrvLKngWd8o7KU6-1280-80.png" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">Creative Bloq <span class="tag">실무·툴</span></div>
+            <div class="title">전공별로 어떤 노트북이 필요한지 정리한 가이드</div>
+            <div class="orig">Want to know which laptop you actually need for your major? We got you</div>
+            <div class="summary">전공이 노트북 선택을 좌우한다 — 막연히 사지 말 것.</div>
+            <div class="date">2026-08-07</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://www.creativebloq.com/entertainment/gaming/onimusha-way-of-the-sword-ps5-hands-on-capcoms-samurai-comeback-is-far-stranger-and-more-ambitious-than-i-expected" data-title="오니무샤: 웨이 오브 더 소드 — PS5 핸즈온" data-source="Creative Bloq" data-tag="실무·툴" data-image="https://cdn.mos.cms.futurecdn.net/7esGUwALLT8ZoJxz42AHFb-1280-80.jpg" data-date="2026-08-07">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://www.creativebloq.com/entertainment/gaming/onimusha-way-of-the-sword-ps5-hands-on-capcoms-samurai-comeback-is-far-stranger-and-more-ambitious-than-i-expected" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://cdn.mos.cms.futurecdn.net/7esGUwALLT8ZoJxz42AHFb-1280-80.jpg" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">Creative Bloq <span class="tag">실무·툴</span></div>
+            <div class="title">오니무샤: 웨이 오브 더 소드 — PS5 핸즈온</div>
+            <div class="orig">Onimusha: Way of the Sword (PS5) hands-on – Capcom’s samurai comeback is far stranger and more ambitious than I expected</div>
+            <div class="summary">가장 큰 반전은 세키로식 전투가 아니었다 — 예상보다 낯설고 야심찬 캡콤의 사무라이 컴백.</div>
+            <div class="date">2026-08-07</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://www.designboom.com/architecture/three-conical-timber-roofs-open-community-cabin-south-london-burgess-architects/" data-title="원뿔 목조 지붕 셋을 얹은 남런던 커뮤니티 캐빈" data-source="Designboom" data-tag="디자인 전반" data-image="https://www.designboom.com/wp-content/uploads/2026/08/burgess-architects-feltham-green-cabin-london-designboom-700-500x400-22b08q85r288.jpg" data-date="2026-08-06">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://www.designboom.com/architecture/three-conical-timber-roofs-open-community-cabin-south-london-burgess-architects/" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://www.designboom.com/wp-content/uploads/2026/08/burgess-architects-feltham-green-cabin-london-designboom-700-500x400-22b08q85r288.jpg" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">Designboom <span class="tag">디자인 전반</span></div>
+            <div class="title">원뿔 목조 지붕 셋을 얹은 남런던 커뮤니티 캐빈</div>
+            <div class="orig">three conical timber roofs crown open community cabin in south london</div>
+            <div class="summary">볼트 천장의 유연한 내부가 워크숍·모임·커뮤니티 행사를 두루 받아낸다.</div>
+            <div class="date">2026-08-06</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://design-milk.com/tan-france-castlery-first-furniture-collection/" data-title="Tan France × Castlery — 레이어링 감각을 담은 첫 가구 컬렉션" data-source="Design Milk" data-tag="인테리어·오브제" data-image="https://design-milk.com/images/2026/08/260523_CASTLERY0104_FINAL-2-1500x1000.jpg" data-date="2026-08-06">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://design-milk.com/tan-france-castlery-first-furniture-collection/" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://design-milk.com/images/2026/08/260523_CASTLERY0104_FINAL-2-1500x1000.jpg" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">Design Milk <span class="tag">인테리어·오브제</span></div>
+            <div class="title">Tan France × Castlery — 레이어링 감각을 담은 첫 가구 컬렉션</div>
+            <div class="orig">Tan France Brings His Eye for Layering to a Furniture Collection With Castlery</div>
+            <div class="summary">영국과 남아시아 디자인 전통에서 출발한 Tan France의 첫 가구 컬렉션.</div>
+            <div class="date">2026-08-06</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://www.dezeen.com/2026/08/06/tan-france-debuts-furniture-collection-castlery/" data-title="Tan France, Castlery와 첫 가구 컬렉션 공개" data-source="Dezeen" data-tag="건축·공간" data-image="http://static.dezeen.com/uploads/2026/08/tan-france-castlery-collection_dezeen_2364_col_2-1-411x411.jpg" data-date="2026-08-06">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://www.dezeen.com/2026/08/06/tan-france-debuts-furniture-collection-castlery/" target="_blank" rel="noopener">
+          <div class="thumb"><img src="http://static.dezeen.com/uploads/2026/08/tan-france-castlery-collection_dezeen_2364_col_2-1-411x411.jpg" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">Dezeen <span class="tag">건축·공간</span></div>
+            <div class="title">Tan France, Castlery와 첫 가구 컬렉션 공개</div>
+            <div class="orig">Tan France launches debut furniture collection with Castlery</div>
+            <div class="summary">전 Queer Eye 진행자 Tan France가 싱가포르 브랜드 Castlery와 18점 홈웨어 컬렉션을 냈다.</div>
+            <div class="date">2026-08-06</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://www.creativebloq.com/entertainment/gaming/gta-vi-is-so-big-netflix-is-treating-its-trailer-like-a-hollywood-premiere" data-title="GTA VI 트레일러를 영화 시사회처럼 다루는 넷플릭스" data-source="Creative Bloq" data-tag="실무·툴" data-image="https://cdn.mos.cms.futurecdn.net/sAdQPno7vLfyuPNjkv9mC8-1280-80.jpg" data-date="2026-08-06">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://www.creativebloq.com/entertainment/gaming/gta-vi-is-so-big-netflix-is-treating-its-trailer-like-a-hollywood-premiere" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://cdn.mos.cms.futurecdn.net/sAdQPno7vLfyuPNjkv9mC8-1280-80.jpg" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">Creative Bloq <span class="tag">실무·툴</span></div>
+            <div class="title">GTA VI 트레일러를 영화 시사회처럼 다루는 넷플릭스</div>
+            <div class="orig">GTA VI is so big Netflix is treating its trailer like a Hollywood premiere</div>
+            <div class="summary">록스타의 브랜딩이 영화 산업을 작아 보이게 만드는 이유.</div>
+            <div class="date">2026-08-06</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://medium.muz.li/weekly-designers-update-568-941598332d6a?source=rss----5969bf7021a3---4" data-title="Muzli 위클리 디자이너 업데이트 #568" data-source="Muzli" data-tag="UI·디지털" data-image="https://cdn-images-1.medium.com/max/1024/1*hGeNhSlP5XVX-kg7KbFBRw.png" data-date="2026-08-06">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://medium.muz.li/weekly-designers-update-568-941598332d6a?source=rss----5969bf7021a3---4" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://cdn-images-1.medium.com/max/1024/1*hGeNhSlP5XVX-kg7KbFBRw.png" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">Muzli <span class="tag">UI·디지털</span></div>
+            <div class="title">Muzli 위클리 디자이너 업데이트 #568</div>
+            <div class="orig">Weekly Designers Update #568</div>
+            <div class="date">2026-08-06</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://medium.muz.li/weekly-designers-update-568-3e67763b5b7e?source=rss----5969bf7021a3---4" data-title="Muzli 위클리 디자이너 업데이트 #568" data-source="Muzli" data-tag="UI·디지털" data-image="https://cdn-images-1.medium.com/max/1024/1*hGeNhSlP5XVX-kg7KbFBRw.png" data-date="2026-08-06">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://medium.muz.li/weekly-designers-update-568-3e67763b5b7e?source=rss----5969bf7021a3---4" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://cdn-images-1.medium.com/max/1024/1*hGeNhSlP5XVX-kg7KbFBRw.png" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">Muzli <span class="tag">UI·디지털</span></div>
+            <div class="title">Muzli 위클리 디자이너 업데이트 #568</div>
+            <div class="orig">Weekly Designers Update #568</div>
+            <div class="date">2026-08-06</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://abduzeedo.com/bord-restaurant-visual-identity-and-web-branding/" data-title="Bord 레스토랑 — 비주얼 아이덴티티와 웹 브랜딩" data-source="Abduzeedo" data-tag="그래픽·브랜딩" data-image="https://cms.abduzeedo.com/sites/default/files/originals/bord_hero_mac_1to1_0.jpg" data-date="2026-08-06">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://abduzeedo.com/bord-restaurant-visual-identity-and-web-branding/" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://cms.abduzeedo.com/sites/default/files/originals/bord_hero_mac_1to1_0.jpg" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">Abduzeedo <span class="tag">그래픽·브랜딩</span></div>
+            <div class="title">Bord 레스토랑 — 비주얼 아이덴티티와 웹 브랜딩</div>
+            <div class="orig">Bord Restaurant Visual Identity and Web Branding</div>
+            <div class="summary">일렉트릭 블루와 세리프 타입으로 짠 스톡홀름 레스토랑 Bord의 아이덴티티 시스템.</div>
+            <div class="date">2026-08-06</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://abduzeedo.com/korba-architectural-studio-branding-system/" data-title="KORBA — 건축 스튜디오 브랜딩 시스템" data-source="Abduzeedo" data-tag="그래픽·브랜딩" data-image="https://cms.abduzeedo.com/sites/default/files/originals/korba-brand-identity_1_0.jpg" data-date="2026-08-06">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://abduzeedo.com/korba-architectural-studio-branding-system/" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://cms.abduzeedo.com/sites/default/files/originals/korba-brand-identity_1_0.jpg" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">Abduzeedo <span class="tag">그래픽·브랜딩</span></div>
+            <div class="title">KORBA — 건축 스튜디오 브랜딩 시스템</div>
+            <div class="orig">KORBA Architectural Studio Branding System</div>
+            <div class="summary">정제된 기하 형태와 인쇄물로 구성한 건축 스튜디오 아이덴티티.</div>
+            <div class="date">2026-08-06</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://abduzeedo.com/wow-visual-identity-branding-plural-branding-studio/" data-title="WOW — Plural Branding Studio의 비주얼 아이덴티티" data-source="Abduzeedo" data-tag="그래픽·브랜딩" data-image="https://cms.abduzeedo.com/sites/default/files/originals/wow_0_0.jpg" data-date="2026-08-06">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://abduzeedo.com/wow-visual-identity-branding-plural-branding-studio/" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://cms.abduzeedo.com/sites/default/files/originals/wow_0_0.jpg" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">Abduzeedo <span class="tag">그래픽·브랜딩</span></div>
+            <div class="title">WOW — Plural Branding Studio의 비주얼 아이덴티티</div>
+            <div class="orig">WOW Visual Identity Branding by Plural Branding Studio</div>
+            <div class="summary">굵은 커스텀 타이포그래피와 면 색으로 밀어붙인 WOW 아이덴티티와 인쇄 애플리케이션.</div>
+            <div class="date">2026-08-06</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://abduzeedo.com/gregory-lalle-portfolio-concept-ui-ux-design-dmitri-semenov/" data-title="Gregory Lalle 포트폴리오 — UI·UX 컨셉 (Dmitri Semenov)" data-source="Abduzeedo" data-tag="그래픽·브랜딩" data-image="https://cms.abduzeedo.com/sites/default/files/originals/gregory-lalle-portfolio-concept_0_0.png" data-date="2026-08-06">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://abduzeedo.com/gregory-lalle-portfolio-concept-ui-ux-design-dmitri-semenov/" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://cms.abduzeedo.com/sites/default/files/originals/gregory-lalle-portfolio-concept_0_0.png" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">Abduzeedo <span class="tag">그래픽·브랜딩</span></div>
+            <div class="title">Gregory Lalle 포트폴리오 — UI·UX 컨셉 (Dmitri Semenov)</div>
+            <div class="orig">Gregory Lalle Portfolio Concept UI UX Design by Dmitri Semenov</div>
+            <div class="summary">모던한 레이아웃 구조와 인터랙션 모션을 실험한 포트폴리오 콘셉트.</div>
+            <div class="date">2026-08-06</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://blog.naver.com/designpress2016/224368015563?fromRss=true&amp;trackingCode=rss" data-title="스웨덴 고틀란드 섬의 여름을 담은 팜스테이" data-source="디자인프레스" data-tag="국내·디자인 전반" data-image="https://blogthumb.pstatic.net/MjAyNjA4MDRfMTA0/MDAxNzg1ODMyNDUzMzE1.yXEkY2_edIYtPlUuLf6udL3VdwIPCnSG1sDU5TnrIWsg.y-swQ-x4I6mvvbOTJd7uf-9yQ8P1-f2BuutYhzumgSQg.JPEG/imgi_89_9abda988-8e42-42ab-9b1c-00075853ca09.jpg?type=s3" data-date="2026-08-06">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://blog.naver.com/designpress2016/224368015563?fromRss=true&amp;trackingCode=rss" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://blogthumb.pstatic.net/MjAyNjA4MDRfMTA0/MDAxNzg1ODMyNDUzMzE1.yXEkY2_edIYtPlUuLf6udL3VdwIPCnSG1sDU5TnrIWsg.y-swQ-x4I6mvvbOTJd7uf-9yQ8P1-f2BuutYhzumgSQg.JPEG/imgi_89_9abda988-8e42-42ab-9b1c-00075853ca09.jpg?type=s3" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">디자인프레스 <span class="tag">국내·디자인 전반</span></div>
+            <div class="title">스웨덴 고틀란드 섬의 여름을 담은 팜스테이</div>
+            <div class="summary">냉수 수영과 장작 사우나로 완성하는 바이킹 웰니스 스웨덴 발트해 최대 섬 고틀란드 남단 부르그스비크(Burgsvik)에 자리한 시비얀스(Sibbjäns)는 스웨덴 최초의 팜스테이 부티크다. 엔터테인먼트 업계에서 일하는 부부 수산나·폰투스 뢴(Susa…</div>
+            <div class="date">2026-08-06</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://the-edit.co.kr/86796" data-title="[book] 등골이 오싹해지는 공포소설 4" data-source="디에디트" data-tag="국내·라이프스타일" data-image="https://the-edit.co.kr/wp-content/uploads/2026/06/book01.webp" data-date="2026-08-06">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://the-edit.co.kr/86796" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://the-edit.co.kr/wp-content/uploads/2026/06/book01.webp" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">디에디트 <span class="tag">국내·라이프스타일</span></div>
+            <div class="title">[book] 등골이 오싹해지는 공포소설 4</div>
+            <div class="summary">베스트셀러보다 더 재미있는 책 추천 시리즈 &lt;p&gt;The post [book] 등골이 오싹해지는 공포소설 4 first appeared on 디에디트 .&lt;/p&gt;</div>
+            <div class="date">2026-08-06</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://blog.naver.com/designpress2016/224368611518?fromRss=true&amp;trackingCode=rss" data-title="100년 된 디자인 뮤지엄이 로봇을 수집하는 이유" data-source="디자인프레스" data-tag="국내·디자인 전반" data-image="https://blogthumb.pstatic.net/MjAyNjA4MDVfMjE0/MDAxNzg1ODg5OTYyMDIx.K-ClPkmORYLQaUsTXU7s0IJaqiQfv0wFEiwxiJFoZHkg.dyFbteTnBQlC4SRJwhp6Hvd32KsRh5CR-2lbaIbm4Fkg.JPEG/5.jpg?type=s3" data-date="2026-08-06">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://blog.naver.com/designpress2016/224368611518?fromRss=true&amp;trackingCode=rss" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://blogthumb.pstatic.net/MjAyNjA4MDVfMjE0/MDAxNzg1ODg5OTYyMDIx.K-ClPkmORYLQaUsTXU7s0IJaqiQfv0wFEiwxiJFoZHkg.dyFbteTnBQlC4SRJwhp6Hvd32KsRh5CR-2lbaIbm4Fkg.JPEG/5.jpg?type=s3" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">디자인프레스 <span class="tag">국내·디자인 전반</span></div>
+            <div class="title">100년 된 디자인 뮤지엄이 로봇을 수집하는 이유</div>
+            <div class="summary">디 노이에 잠룽 창립 100주년 기념전 〈로보틱 월드〉 독일 뮌헨의 피나코테크 데어 모데르네(Pinakothek der Moderne) 내 디자인 뮤지엄 디 노이에 잠룽(Die Neue Sammlung)이 창립 100주년을 맞아 새로운 상설 전시 공…</div>
+            <div class="date">2026-08-06</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://blog.naver.com/designpress2016/224369125011?fromRss=true&amp;trackingCode=rss" data-title="2026년 하반기 놓치지 말아야 할 국내 전시 ②" data-source="디자인프레스" data-tag="국내·디자인 전반" data-image="https://blogthumb.pstatic.net/MjAyNjA4MDVfMjQz/MDAxNzg1OTE4OTc5MDc5.elHSqvXY0DD8exTsQ0UfmEnxnYJXCskFzjdrXAmCybgg.tYSp2sdAJAAMwsS6zdS2CdtDM0k729c3W7Qed-n-HsIg.JPEG/20260521_press_img_01.jpg?type=s3" data-date="2026-08-05">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://blog.naver.com/designpress2016/224369125011?fromRss=true&amp;trackingCode=rss" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://blogthumb.pstatic.net/MjAyNjA4MDVfMjQz/MDAxNzg1OTE4OTc5MDc5.elHSqvXY0DD8exTsQ0UfmEnxnYJXCskFzjdrXAmCybgg.tYSp2sdAJAAMwsS6zdS2CdtDM0k729c3W7Qed-n-HsIg.JPEG/20260521_press_img_01.jpg?type=s3" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">디자인프레스 <span class="tag">국내·디자인 전반</span></div>
+            <div class="title">2026년 하반기 놓치지 말아야 할 국내 전시 ②</div>
+            <div class="summary">개념미술부터 미국 모더니즘까지 ▼ 기사는 1편에서 이어집니다 개념미술과 미니멀리즘의 선구자 솔 르윗 개인전 &#x27;개념미술&#x27;이라는 말은 익숙하지만, 그 의미를 작품으로 이해하기는 쉽지 않다. 그런 점에서 아모레퍼시픽미술관에서 열리는 솔 르윗(Sol LeW…</div>
+            <div class="date">2026-08-05</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://blog.naver.com/designpress2016/224369124080?fromRss=true&amp;trackingCode=rss" data-title="2026년 하반기 놓치지 말아야 할 국내 전시 ①" data-source="디자인프레스" data-tag="국내·디자인 전반" data-image="https://blogthumb.pstatic.net/MjAyNjA4MDVfNzAg/MDAxNzg1OTE3OTIxMDAz.NxUHNvtx3obATaDcjQOWvvsJGiC2lhT43znr-6zElMMg.kojW2Ck3LAAgQ5JOxR2K2pzf4j_PX1mT2CqwHYdZM2Ag.JPEG/Come_Home_Again_2022%282%29.jpg?type=s3" data-date="2026-08-05">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://blog.naver.com/designpress2016/224369124080?fromRss=true&amp;trackingCode=rss" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://blogthumb.pstatic.net/MjAyNjA4MDVfNzAg/MDAxNzg1OTE3OTIxMDAz.NxUHNvtx3obATaDcjQOWvvsJGiC2lhT43znr-6zElMMg.kojW2Ck3LAAgQ5JOxR2K2pzf4j_PX1mT2CqwHYdZM2Ag.JPEG/Come_Home_Again_2022%282%29.jpg?type=s3" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">디자인프레스 <span class="tag">국내·디자인 전반</span></div>
+            <div class="title">2026년 하반기 놓치지 말아야 할 국내 전시 ①</div>
+            <div class="summary">한국을 찾은 세계 미술 거장들 2026년도 어느덧 반환점을 지났다. 미술계는 이제 곧 분주해진다. 프리즈 서울을 전후로 세계적 거장들의 개인전이 잇달아 개막하고, 한국 현대미술사를 대표하는 작가들의 회고전도 함께 열린다. 공연과 건축을 넘나드는 공간…</div>
+            <div class="date">2026-08-05</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://blog.naver.com/designpress2016/224368092630?fromRss=true&amp;trackingCode=rss" data-title="노르웨이 북극권에서 만나는 세계 최북단 파인 다이닝" data-source="디자인프레스" data-tag="국내·디자인 전반" data-image="https://blogthumb.pstatic.net/MjAyNjA4MDRfMTU5/MDAxNzg1ODM3Nzg4NzU5.b625FGubx65OV0tVkPpojzgkg7ptgswYQ1uqIfgUueYg.6W0Qi8Oqwr7Ina7pgVkK6xCdEoxvXN0XD_4cNzcu06Ag.JPEG/imgi_31_restaurant-huset-svalbard-snohetta_18.jpg?type=s3" data-date="2026-08-05">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://blog.naver.com/designpress2016/224368092630?fromRss=true&amp;trackingCode=rss" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://blogthumb.pstatic.net/MjAyNjA4MDRfMTU5/MDAxNzg1ODM3Nzg4NzU5.b625FGubx65OV0tVkPpojzgkg7ptgswYQ1uqIfgUueYg.6W0Qi8Oqwr7Ina7pgVkK6xCdEoxvXN0XD_4cNzcu06Ag.JPEG/imgi_31_restaurant-huset-svalbard-snohetta_18.jpg?type=s3" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">디자인프레스 <span class="tag">국내·디자인 전반</span></div>
+            <div class="title">노르웨이 북극권에서 만나는 세계 최북단 파인 다이닝</div>
+            <div class="summary">백야와 극야, 극지의 빛을 담은 레스토랑 롱이어뷔엔의 심장, 후세트 노르웨이령 스발바르 제도, 북위 78도에 자리한 롱이어뷔엔(Longyearbyen)에는 세계에서 가장 북쪽에 있는 파인 다이닝 레스토랑이 있다. 이름부터 &#x27;그 집(the house)…</div>
+            <div class="date">2026-08-05</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://blog.naver.com/designpress2016/224367695730?fromRss=true&amp;trackingCode=rss" data-title="소리를 위한 건축, 건축이 된 악기" data-source="디자인프레스" data-tag="국내·디자인 전반" data-image="https://blogthumb.pstatic.net/MjAyNjA4MDRfOTUg/MDAxNzg1ODEyMDg0ODYy.xgUJVJzDlQN4qReNqhm1GE3iAJ-LU5shx1qr00Xncpkg.ShhAebP_on1xlVDs46JU1AVXMU_fjZeBYbFhtEqYE9cg.JPEG/batch_04.jpg?type=s3" data-date="2026-08-05">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://blog.naver.com/designpress2016/224367695730?fromRss=true&amp;trackingCode=rss" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://blogthumb.pstatic.net/MjAyNjA4MDRfOTUg/MDAxNzg1ODEyMDg0ODYy.xgUJVJzDlQN4qReNqhm1GE3iAJ-LU5shx1qr00Xncpkg.ShhAebP_on1xlVDs46JU1AVXMU_fjZeBYbFhtEqYE9cg.JPEG/batch_04.jpg?type=s3" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">디자인프레스 <span class="tag">국내·디자인 전반</span></div>
+            <div class="title">소리를 위한 건축, 건축이 된 악기</div>
+            <div class="summary">에비앙 숲속에 문을 연 새로운 실내악 공연장, 라 수르스 비브(La Source Vive) 레만호(Lac Léman)를 따라 이어지는 프랑스 에비앙의 숲은 깨끗한 물과 심신의 치유를 상징해왔다. 이 조용한 숲속에 지난 6월 24일, 새로운 문화적 랜…</div>
+            <div class="date">2026-08-05</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://the-edit.co.kr/86494" data-title="생존형 릴스 에디터로 살아가는 법" data-source="디에디트" data-tag="국내·라이프스타일" data-image="https://the-edit.co.kr/wp-content/uploads/2026/06/1_re-1.webp" data-date="2026-08-04">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://the-edit.co.kr/86494" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://the-edit.co.kr/wp-content/uploads/2026/06/1_re-1.webp" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">디에디트 <span class="tag">국내·라이프스타일</span></div>
+            <div class="title">생존형 릴스 에디터로 살아가는 법</div>
+            <div class="summary">[타인의 삶] 이것저것 다 하는 프리랜스 에디터의 릴스 제작기 &lt;p&gt;The post 생존형 릴스 에디터로 살아가는 법 first appeared on 디에디트 .&lt;/p&gt;</div>
+            <div class="date">2026-08-04</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://blog.naver.com/designpress2016/224367634694?fromRss=true&amp;trackingCode=rss" data-title="디자인 뮤지엄이 된 탄약 벙커" data-source="디자인프레스" data-tag="국내·디자인 전반" data-image="https://blogthumb.pstatic.net/MjAyNjA4MDRfMjE5/MDAxNzg1ODA2MjYyNDk4.Qc1JTvuj_KjI-uexHl1llIBPGrb_cDntRQWPryqn26Mg.radyf49oQ-Q6c9xJu2V8ldtaMN2SvMbreRd6C3oJaJgg.JPEG/1.jpg?type=s3" data-date="2026-08-04">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://blog.naver.com/designpress2016/224367634694?fromRss=true&amp;trackingCode=rss" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://blogthumb.pstatic.net/MjAyNjA4MDRfMjE5/MDAxNzg1ODA2MjYyNDk4.Qc1JTvuj_KjI-uexHl1llIBPGrb_cDntRQWPryqn26Mg.radyf49oQ-Q6c9xJu2V8ldtaMN2SvMbreRd6C3oJaJgg.JPEG/1.jpg?type=s3" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">디자인프레스 <span class="tag">국내·디자인 전반</span></div>
+            <div class="title">디자인 뮤지엄이 된 탄약 벙커</div>
+            <div class="summary">전쟁의 기억 위에 세운 디자인 실험, 네덜란드 iCOON의 ‘Shelter for Design’ 1940년 5월 10일, 나치 독일은 중립국이던 네덜란드를 침공했다. 불과 닷새 만에 네덜란드는 항복했고, 이후 1945년까지 독일의 점령 아래 놓이게…</div>
+            <div class="date">2026-08-04</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://the-edit.co.kr/87446" data-title="[새로나왔] 8월 1주차 신상 리스트" data-source="디에디트" data-tag="국내·라이프스타일" data-image="https://the-edit.co.kr/wp-content/uploads/2026/08/lgjan01_new.webp" data-date="2026-08-04">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://the-edit.co.kr/87446" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://the-edit.co.kr/wp-content/uploads/2026/08/lgjan01_new.webp" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">디에디트 <span class="tag">국내·라이프스타일</span></div>
+            <div class="title">[새로나왔] 8월 1주차 신상 리스트</div>
+            <div class="summary">세상의 모든 귀엽고 놀라운 신상 &lt;p&gt;The post [새로나왔] 8월 1주차 신상 리스트 first appeared on 디에디트 .&lt;/p&gt;</div>
+            <div class="date">2026-08-04</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://blog.naver.com/designpress2016/224367628418?fromRss=true&amp;trackingCode=rss" data-title="타버린 나무 앞, 공간의 근원을 사유하다" data-source="디자인프레스" data-tag="국내·디자인 전반" data-image="https://blogthumb.pstatic.net/MjAyNjA4MDRfMjQg/MDAxNzg1ODExMTIwNDY3.9qVlc0H9dpv5JRu6Ofm255iUme6xN1CxeFE9GmaRVbQg.AQj_Xx3TaotetYYs-e_14CfvZMwWou-WZfTz9GN-fAUg.JPEG/1.jpg?type=s3" data-date="2026-08-04">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://blog.naver.com/designpress2016/224367628418?fromRss=true&amp;trackingCode=rss" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://blogthumb.pstatic.net/MjAyNjA4MDRfMjQg/MDAxNzg1ODExMTIwNDY3.9qVlc0H9dpv5JRu6Ofm255iUme6xN1CxeFE9GmaRVbQg.AQj_Xx3TaotetYYs-e_14CfvZMwWou-WZfTz9GN-fAUg.JPEG/1.jpg?type=s3" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">디자인프레스 <span class="tag">국내·디자인 전반</span></div>
+            <div class="title">타버린 나무 앞, 공간의 근원을 사유하다</div>
+            <div class="summary">〈박선기: The Origin of Space〉 집이 불타고 남는 것은 무엇인가. 형체는 무너져도 기둥과 보가 서 있던 자리, 그 공간의 윤곽만은 쉽게 사라지지 않는다. 박선기(1966~)는 이 질문에서 출발해 신세계 더 헤리티지 4층 더 헤리티지…</div>
+            <div class="date">2026-08-04</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://the-edit.co.kr/87393" data-title="릴스 대신 에세이, 주말의 허전함을 채워줄 책 5" data-source="디에디트" data-tag="국내·라이프스타일" data-image="https://the-edit.co.kr/wp-content/uploads/2026/07/d1000_retouched_-09086.webp" data-date="2026-07-30">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://the-edit.co.kr/87393" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://the-edit.co.kr/wp-content/uploads/2026/07/d1000_retouched_-09086.webp" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">디에디트 <span class="tag">국내·라이프스타일</span></div>
+            <div class="title">릴스 대신 에세이, 주말의 허전함을 채워줄 책 5</div>
+            <div class="summary">재미와 감동이 있고, 호불호는 없습니다 &lt;p&gt;The post 릴스 대신 에세이, 주말의 허전함을 채워줄 책 5 first appeared on 디에디트 .&lt;/p&gt;</div>
+            <div class="date">2026-07-30</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://the-edit.co.kr/87368" data-title="여름 휴가, 줄 서다 끝낼 순 없으니까" data-source="디에디트" data-tag="국내·라이프스타일" data-image="https://the-edit.co.kr/wp-content/uploads/2026/07/1400_LKS02340.jpg" data-date="2026-07-29">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://the-edit.co.kr/87368" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://the-edit.co.kr/wp-content/uploads/2026/07/1400_LKS02340.jpg" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">디에디트 <span class="tag">국내·라이프스타일</span></div>
+            <div class="title">여름 휴가, 줄 서다 끝낼 순 없으니까</div>
+            <div class="summary">캐리비안 베이의 즐거움, 삼성카드를 더하다 &lt;p&gt;The post 여름 휴가, 줄 서다 끝낼 순 없으니까 first appeared on 디에디트 .&lt;/p&gt;</div>
+            <div class="date">2026-07-29</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://the-edit.co.kr/87342" data-title="[새로나왔] 7월 4주차 신상 리스트" data-source="디에디트" data-tag="국내·라이프스타일" data-image="https://the-edit.co.kr/wp-content/uploads/2026/07/penta.webp" data-date="2026-07-28">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://the-edit.co.kr/87342" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://the-edit.co.kr/wp-content/uploads/2026/07/penta.webp" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">디에디트 <span class="tag">국내·라이프스타일</span></div>
+            <div class="title">[새로나왔] 7월 4주차 신상 리스트</div>
+            <div class="summary">세상의 모든 귀엽고 놀라운 신상 &lt;p&gt;The post [새로나왔] 7월 4주차 신상 리스트 first appeared on 디에디트 .&lt;/p&gt;</div>
+            <div class="date">2026-07-28</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://the-edit.co.kr/87340" data-title="왜 싸우는지 아는 사람? 리뷰" data-source="디에디트" data-tag="국내·라이프스타일" data-image="" data-date="2026-07-27">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://the-edit.co.kr/87340" target="_blank" rel="noopener">
+          <div class="thumb"><div class="noimg">🖼</div></div>
+          <div class="meta">
+            <div class="src">디에디트 <span class="tag">국내·라이프스타일</span></div>
+            <div class="title">왜 싸우는지 아는 사람? 리뷰</div>
+            <div class="summary">역대급 호불호? 그게 전부는 아니다 &lt;p&gt;The post 왜 싸우는지 아는 사람? &lt;호프&gt; 리뷰 first appeared on 디에디트 .&lt;/p&gt;</div>
+            <div class="date">2026-07-27</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://the-edit.co.kr/87312" data-title="갤럭시 Z 폴드8, 왜 이 비율로 나왔을까요?" data-source="디에디트" data-tag="국내·라이프스타일" data-image="https://the-edit.co.kr/wp-content/uploads/2026/07/DSC_9941_watermarked.jpg" data-date="2026-07-24">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://the-edit.co.kr/87312" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://the-edit.co.kr/wp-content/uploads/2026/07/DSC_9941_watermarked.jpg" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">디에디트 <span class="tag">국내·라이프스타일</span></div>
+            <div class="title">갤럭시 Z 폴드8, 왜 이 비율로 나왔을까요?</div>
+            <div class="summary">그리고 이름은 왜 바꿨을까요? &lt;p&gt;The post 갤럭시 Z 폴드8, 왜 이 비율로 나왔을까요? first appeared on 디에디트 .&lt;/p&gt;</div>
+            <div class="date">2026-07-24</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://www.creativebloq.com/tech/headphones-earbuds/these-headphones-remind-me-of-supercar-design-and-turns-out-for-good-reason" data-title="Focal 헤드폰 — 슈퍼카 같은 조형, 알고 보니 전부 기능" data-source="Creative Bloq" data-tag="실무·툴" data-image="https://cdn.mos.cms.futurecdn.net/YU3uQkQW4Zjgtani7m4VxV-1280-80.jpg" data-date="2026-08-06">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://www.creativebloq.com/tech/headphones-earbuds/these-headphones-remind-me-of-supercar-design-and-turns-out-for-good-reason" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://cdn.mos.cms.futurecdn.net/YU3uQkQW4Zjgtani7m4VxV-1280-80.jpg" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">Creative Bloq <span class="tag">실무·툴</span></div>
+            <div class="title">Focal 헤드폰 — 슈퍼카 같은 조형, 알고 보니 전부 기능</div>
+            <div class="orig">Focal headphones may boast a unique design language, but it&#x27;s all functional says designer</div>
+            <div class="summary">허니콤 그릴, 알루미늄 요크, 다이아몬드 컷 — 조형이 곧 기능이라는 디자이너의 설명.</div>
+            <div class="date">2026-08-06</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://www.creativebloq.com/design/asap-rocky-just-dumped-this-designer-over-leaked-dms" data-title="ASAP Rocky, DM 유출로 협업 디자이너와 결별" data-source="Creative Bloq" data-tag="실무·툴" data-image="https://cdn.mos.cms.futurecdn.net/xxGcPcp7hchXNQGyEgUmXB-1280-80.jpg" data-date="2026-08-06">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://www.creativebloq.com/design/asap-rocky-just-dumped-this-designer-over-leaked-dms" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://cdn.mos.cms.futurecdn.net/xxGcPcp7hchXNQGyEgUmXB-1280-80.jpg" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">Creative Bloq <span class="tag">실무·툴</span></div>
+            <div class="title">ASAP Rocky, DM 유출로 협업 디자이너와 결별</div>
+            <div class="orig">ASAP Rocky just dumped this designer over leaked DMs</div>
+            <div class="summary">DM 유출로 협업이 깨졌다 — 과잉 반응이었을까?</div>
+            <div class="date">2026-08-06</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://www.designboom.com/architecture/sidelined-sport-winners-losers-gabriel-fontana-amanda-pinatih-nieuwe-instituut/" data-title="SIDELINED — 승패 없는 스포츠를 묻는 전시" data-source="Designboom" data-tag="디자인 전반" data-image="https://www.designboom.com/wp-content/uploads/2026/08/sidelined-sport-winners-losers-gabriel-fontana-amanda-pinatih-nieuwe-instituut-designboom-700-500x400-22b08q85r676.jpg" data-date="2026-08-06">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://www.designboom.com/architecture/sidelined-sport-winners-losers-gabriel-fontana-amanda-pinatih-nieuwe-instituut/" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://www.designboom.com/wp-content/uploads/2026/08/sidelined-sport-winners-losers-gabriel-fontana-amanda-pinatih-nieuwe-instituut-designboom-700-500x400-22b08q85r676.jpg" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">Designboom <span class="tag">디자인 전반</span></div>
+            <div class="title">SIDELINED — 승패 없는 스포츠를 묻는 전시</div>
+            <div class="orig">SIDELINED asks what happens when sport stops producing winners and losers</div>
+            <div class="summary">승패를 없애면 스포츠가 어떻게 달라질까 — 로테르담 Nieuwe Instituut의 공공 설치로 돌아온 실험.</div>
+            <div class="date">2026-08-06</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://www.dezeen.com/2026/08/06/lj-house-studio-saransh-iksoi-studio/" data-title="LJ 하우스 — 3대가 함께 사는 아마다바드 주택" data-source="Dezeen" data-tag="건축·공간" data-image="http://static.dezeen.com/uploads/2026/07/lj-house-studio-saransh-iksoi-studio-ahmedabad_dezeen_2364_col_4-SQ2-411x411.jpg" data-date="2026-08-06">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://www.dezeen.com/2026/08/06/lj-house-studio-saransh-iksoi-studio/" target="_blank" rel="noopener">
+          <div class="thumb"><img src="http://static.dezeen.com/uploads/2026/07/lj-house-studio-saransh-iksoi-studio-ahmedabad_dezeen_2364_col_4-SQ2-411x411.jpg" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">Dezeen <span class="tag">건축·공간</span></div>
+            <div class="title">LJ 하우스 — 3대가 함께 사는 아마다바드 주택</div>
+            <div class="orig">Multi-generational LJ House in Ahmedabad prioritises shared living</div>
+            <div class="summary">완만히 휘어진 지붕선과 하트 모양 비대칭 계단실이 특징인 3대 동거 주택.</div>
+            <div class="date">2026-08-06</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://www.creativebloq.com/creative-inspiration/digital-crafting/forget-3d-printers-cnc-machines-could-be-the-next-big-craze-of-2027" data-title="3D 프린터 다음은 CNC — 2027년 메이킹 트렌드 전망" data-source="Creative Bloq" data-tag="실무·툴" data-image="https://cdn.mos.cms.futurecdn.net/ui5DDhHi42iWFJLaZXk6q5-1280-80.jpg" data-date="2026-08-06">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://www.creativebloq.com/creative-inspiration/digital-crafting/forget-3d-printers-cnc-machines-could-be-the-next-big-craze-of-2027" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://cdn.mos.cms.futurecdn.net/ui5DDhHi42iWFJLaZXk6q5-1280-80.jpg" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">Creative Bloq <span class="tag">실무·툴</span></div>
+            <div class="title">3D 프린터 다음은 CNC — 2027년 메이킹 트렌드 전망</div>
+            <div class="orig">Forget 3D printers, CNC machines could be the next big craze of 2027</div>
+            <div class="summary">설거지하며 듣는 금속 깎는 소리 — CNC가 다음 유행이 될 거라는 전망.</div>
+            <div class="date">2026-08-06</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://www.dezeen.com/2026/08/06/mvrdv-bihailou-art-village-shenzhen/" data-title="MVRDV — 색색의 박스를 쌓아 올린 선전 문화복합단지" data-source="Dezeen" data-tag="건축·공간" data-image="http://static.dezeen.com/uploads/2026/08/mvrdv-bihailou-art-village-shenzhen-sq_dezeen_2364_col_0-411x411.jpg" data-date="2026-08-06">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://www.dezeen.com/2026/08/06/mvrdv-bihailou-art-village-shenzhen/" target="_blank" rel="noopener">
+          <div class="thumb"><img src="http://static.dezeen.com/uploads/2026/08/mvrdv-bihailou-art-village-shenzhen-sq_dezeen_2364_col_0-411x411.jpg" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">Dezeen <span class="tag">건축·공간</span></div>
+            <div class="title">MVRDV — 색색의 박스를 쌓아 올린 선전 문화복합단지</div>
+            <div class="orig">MVRDV designs colourful stacked volumes for Shenzhen cultural complex</div>
+            <div class="summary">MVRDV가 선전에 색색의 볼륨을 쌓아 올린 Bihailou Art Village 문화단지 설계를 공개했다.</div>
+            <div class="date">2026-08-06</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://www.creativebloq.com/3d/video-game-design/this-indie-game-is-turning-dressmaking-into-the-ultimate-creative-fantasy" data-title="옷 짓기를 게임으로 만든 인디 타이틀" data-source="Creative Bloq" data-tag="실무·툴" data-image="https://cdn.mos.cms.futurecdn.net/jyoGubTyi8yYBMT5aGDyiM-1280-80.jpg" data-date="2026-08-06">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://www.creativebloq.com/3d/video-game-design/this-indie-game-is-turning-dressmaking-into-the-ultimate-creative-fantasy" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://cdn.mos.cms.futurecdn.net/jyoGubTyi8yYBMT5aGDyiM-1280-80.jpg" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">Creative Bloq <span class="tag">실무·툴</span></div>
+            <div class="title">옷 짓기를 게임으로 만든 인디 타이틀</div>
+            <div class="orig">This indie game is turning dressmaking into the ultimate creative fantasy</div>
+            <div class="summary">의상 디자이너의 꿈이 아늑한 크래프팅 게임 Dressmaker가 되기까지.</div>
+            <div class="date">2026-08-06</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://www.dezeen.com/2026/08/06/mumbai-apartment-kerala-backwaters-lily-pads/" data-title="고요한 물가에 닿은 느낌 — 케랄라 수로에서 온 뭄바이 아파트" data-source="Dezeen" data-tag="건축·공간" data-image="http://static.dezeen.com/uploads/2026/08/a-borrowed-memory-act-of-quad-sq2-411x411.jpg" data-date="2026-08-06">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://www.dezeen.com/2026/08/06/mumbai-apartment-kerala-backwaters-lily-pads/" target="_blank" rel="noopener">
+          <div class="thumb"><img src="http://static.dezeen.com/uploads/2026/08/a-borrowed-memory-act-of-quad-sq2-411x411.jpg" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">Dezeen <span class="tag">건축·공간</span></div>
+            <div class="title">고요한 물가에 닿은 느낌 — 케랄라 수로에서 온 뭄바이 아파트</div>
+            <div class="orig">Mumbai apartment designed to feel like &quot;arriving at the edge of a still body of water&quot;</div>
+            <div class="summary">케랄라 수로에 뜬 수련잎에서 출발한 뭄바이 3대 동거 아파트 리노베이션.</div>
+            <div class="date">2026-08-06</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://www.designboom.com/architecture/studio-kraft-limited-schoolyard-space-vertical-play-garden-budapest/" data-title="studio KRAFT — 좁은 운동장을 수직 놀이정원으로" data-source="Designboom" data-tag="디자인 전반" data-image="https://www.designboom.com/wp-content/uploads/2026/08/studio-kraft-limited-schoolyard-space-vertical-play-garden-budapest-designboom-700-500x400-22b08q85r990.jpg" data-date="2026-08-06">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://www.designboom.com/architecture/studio-kraft-limited-schoolyard-space-vertical-play-garden-budapest/" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://www.designboom.com/wp-content/uploads/2026/08/studio-kraft-limited-schoolyard-space-vertical-play-garden-budapest-designboom-700-500x400-22b08q85r990.jpg" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">Designboom <span class="tag">디자인 전반</span></div>
+            <div class="title">studio KRAFT — 좁은 운동장을 수직 놀이정원으로</div>
+            <div class="orig">studio KRAFT reclaims limited schoolyard space with vertical play garden in budapest</div>
+            <div class="summary">클라이밍 구조물·야외 교실·식재 놀이공간으로 좁은 운동장의 쓰임을 다시 짰다.</div>
+            <div class="date">2026-08-06</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://www.dezeen.com/2026/08/06/harvest-moon-table-charles-holland-cat-rossi-local-works/" data-title="Harvest Moon 테이블 — 반경 64km 안의 재료와 도구만으로" data-source="Dezeen" data-tag="건축·공간" data-image="http://static.dezeen.com/uploads/2026/08/harvest-moon-table-charles-holland-cat-rossi-local-works_dezeen_2364_sq_3-411x411.jpg" data-date="2026-08-06">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://www.dezeen.com/2026/08/06/harvest-moon-table-charles-holland-cat-rossi-local-works/" target="_blank" rel="noopener">
+          <div class="thumb"><img src="http://static.dezeen.com/uploads/2026/08/harvest-moon-table-charles-holland-cat-rossi-local-works_dezeen_2364_sq_3-411x411.jpg" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">Dezeen <span class="tag">건축·공간</span></div>
+            <div class="title">Harvest Moon 테이블 — 반경 64km 안의 재료와 도구만으로</div>
+            <div class="orig">Harvest Moon table fabricated with materials and tools from within a 40 mile radius</div>
+            <div class="summary">반경 64km(40마일) 안에서 수확한 재료와 그 안의 도구만으로 만든 테이블.</div>
+            <div class="date">2026-08-06</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://www.creativebloq.com/entertainment/movies-tv-shows/thats-not-horror-thats-just-giving-up-critics-slam-ice-cream-man-after-eli-roths-ai-confession" data-title="&quot;공포가 아니라 포기다&quot; — 일라이 로스 AI 사용 고백에 혹평" data-source="Creative Bloq" data-tag="실무·툴" data-image="https://cdn.mos.cms.futurecdn.net/qUj7f8KfCFqf5XDfzVrxdP-1280-80.jpg" data-date="2026-08-06">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://www.creativebloq.com/entertainment/movies-tv-shows/thats-not-horror-thats-just-giving-up-critics-slam-ice-cream-man-after-eli-roths-ai-confession" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://cdn.mos.cms.futurecdn.net/qUj7f8KfCFqf5XDfzVrxdP-1280-80.jpg" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">Creative Bloq <span class="tag">실무·툴</span></div>
+            <div class="title">&quot;공포가 아니라 포기다&quot; — 일라이 로스 AI 사용 고백에 혹평</div>
+            <div class="orig">&quot;That’s not horror, that’s just giving up&quot;: critics slam Ice Cream Man after Eli Roth&#x27;s AI confession</div>
+            <div class="summary">일라이 로스가 영화 &#x27;아주 일부&#x27;에 AI를 썼다고 인정하자 혹평이 쏟아졌다.</div>
+            <div class="date">2026-08-06</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://www.creativebloq.com/art/animation/controversial-disney-tiktok-deal-blurs-the-line-between-tv-and-social-media" data-title="디즈니+의 틱톡화, 애니메이션의 미래가 걱정된다" data-source="Creative Bloq" data-tag="실무·툴" data-image="https://cdn.mos.cms.futurecdn.net/TdkqS9kfo9kQnyBTwfHie-1280-80.jpg" data-date="2026-08-06">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://www.creativebloq.com/art/animation/controversial-disney-tiktok-deal-blurs-the-line-between-tv-and-social-media" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://cdn.mos.cms.futurecdn.net/TdkqS9kfo9kQnyBTwfHie-1280-80.jpg" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">Creative Bloq <span class="tag">실무·툴</span></div>
+            <div class="title">디즈니+의 틱톡화, 애니메이션의 미래가 걱정된다</div>
+            <div class="orig">The TikTokification of Disney+ makes me worry about the future of animation</div>
+            <div class="summary">애니메이터를 해고하고 &#x27;최고의 스토리텔러는 팬&#x27;이라는 디즈니 — 걱정되는 이유.</div>
+            <div class="date">2026-08-06</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://www.designboom.com/architecture/cra-carlo-ratti-associati-kinetic-canopy-modena-former-hospital-italy/" data-title="Carlo Ratti — 모데나 옛 병원 부지의 움직이는 캐노피" data-source="Designboom" data-tag="디자인 전반" data-image="https://www.designboom.com/wp-content/uploads/2026/08/origami-roof-CRA-carlo-ratti-associati-modena-italy-designboom-700-500x400-22b08q85r462.jpg" data-date="2026-08-06">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://www.designboom.com/architecture/cra-carlo-ratti-associati-kinetic-canopy-modena-former-hospital-italy/" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://www.designboom.com/wp-content/uploads/2026/08/origami-roof-CRA-carlo-ratti-associati-modena-italy-designboom-700-500x400-22b08q85r462.jpg" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">Designboom <span class="tag">디자인 전반</span></div>
+            <div class="title">Carlo Ratti — 모데나 옛 병원 부지의 움직이는 캐노피</div>
+            <div class="orig">carlo ratti associati previews a kinetic canopy for modena’s former hospital</div>
+            <div class="summary">옛 병원 안뜰을 계절 따라 바꿀 접이식 캐노피를 실물 모형으로 미리 보여준다.</div>
+            <div class="date">2026-08-06</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://www.creativebloq.com/3d/3d-art/how-i-create-a-sprawling-cyberpunk-vista-using-cinema4d-and-photoshop" data-title="Cinema 4D와 포토샵으로 사이버펑크 도시 전경 만들기" data-source="Creative Bloq" data-tag="실무·툴" data-image="https://cdn.mos.cms.futurecdn.net/WxqspMxgy8Su85hKEdpkiC-1280-80.png" data-date="2026-08-06">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://www.creativebloq.com/3d/3d-art/how-i-create-a-sprawling-cyberpunk-vista-using-cinema4d-and-photoshop" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://cdn.mos.cms.futurecdn.net/WxqspMxgy8Su85hKEdpkiC-1280-80.png" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">Creative Bloq <span class="tag">실무·툴</span></div>
+            <div class="title">Cinema 4D와 포토샵으로 사이버펑크 도시 전경 만들기</div>
+            <div class="orig">How I create sprawling cyberpunk vistas using Cinema4D and Photoshop</div>
+            <div class="summary">Darius Puia가 불안감을 자아내는 디스토피아 풍경을 만드는 영감과 기법을 공개한다.</div>
+            <div class="date">2026-08-06</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://abduzeedo.com/mucho-gusto-tactile-branding-and-packaging-system/" data-title="Mucho Gusto — 촉감을 살린 브랜딩·패키지 시스템" data-source="Abduzeedo" data-tag="그래픽·브랜딩" data-image="https://cms.abduzeedo.com/sites/default/files/originals/mucho-gusto_0_0.jpg" data-date="2026-08-06">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://abduzeedo.com/mucho-gusto-tactile-branding-and-packaging-system/" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://cms.abduzeedo.com/sites/default/files/originals/mucho-gusto_0_0.jpg" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">Abduzeedo <span class="tag">그래픽·브랜딩</span></div>
+            <div class="title">Mucho Gusto — 촉감을 살린 브랜딩·패키지 시스템</div>
+            <div class="orig">Mucho Gusto Tactile Branding and Packaging System</div>
+            <div class="summary">커스텀 타입과 라벨 그래픽으로 촉감을 살린 음료 브랜딩 (Sticky Studio).</div>
+            <div class="date">2026-08-06</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://www.designboom.com/architecture/sawtooth-roof-textured-brick-facade-victorian-home-uk-francesco-pierazzi-architects/" data-title="톱니 지붕과 요철 벽돌로 다시 지은 영국 빅토리안 주택" data-source="Designboom" data-tag="디자인 전반" data-image="https://www.designboom.com/wp-content/uploads/2026/08/francesco-pierazz-architects-sawtooth-house-renovation-victorian-home-kingston-upon-thames-designboom-700-500x400-22b08q85r072.jpg" data-date="2026-08-06">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://www.designboom.com/architecture/sawtooth-roof-textured-brick-facade-victorian-home-uk-francesco-pierazzi-architects/" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://www.designboom.com/wp-content/uploads/2026/08/francesco-pierazz-architects-sawtooth-house-renovation-victorian-home-kingston-upon-thames-designboom-700-500x400-22b08q85r072.jpg" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">Designboom <span class="tag">디자인 전반</span></div>
+            <div class="title">톱니 지붕과 요철 벽돌로 다시 지은 영국 빅토리안 주택</div>
+            <div class="orig">sawtooth roof and textured brick facade reimagine victorian home in the uk</div>
+            <div class="summary">파스텔 톤과 테라조 표면이 실내에 색과 질감을 더하는 빅토리안 주택 개조.</div>
+            <div class="date">2026-08-06</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://abduzeedo.com/noise-scape-2025-holger-lippmann-generative-art/" data-title="noise-scape 2025 — Holger Lippmann의 제너러티브 아트" data-source="Abduzeedo" data-tag="그래픽·브랜딩" data-image="https://cms.abduzeedo.com/sites/default/files/originals/hero_noise-scape-2025-i-holger-lippmann.jpg" data-date="2026-08-06">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://abduzeedo.com/noise-scape-2025-holger-lippmann-generative-art/" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://cms.abduzeedo.com/sites/default/files/originals/hero_noise-scape-2025-i-holger-lippmann.jpg" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">Abduzeedo <span class="tag">그래픽·브랜딩</span></div>
+            <div class="title">noise-scape 2025 — Holger Lippmann의 제너러티브 아트</div>
+            <div class="orig">noise-scape 2025 holger lippmann generative art</div>
+            <div class="summary">노이즈 알고리즘과 겹겹의 매트릭스로 교외 풍경을 닮은 디지털 지형을 생성한다.</div>
+            <div class="date">2026-08-06</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://www.designboom.com/design/drawings-take-flight-art-kites-play/" data-title="그림이 날아오를 때 — 연(kite)의 아트와 디자인" data-source="Designboom" data-tag="디자인 전반" data-image="https://www.designboom.com/wp-content/uploads/2026/08/kites-play-designboom-700-500x400-22b08q85r404.jpg" data-date="2026-08-06">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://www.designboom.com/design/drawings-take-flight-art-kites-play/" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://www.designboom.com/wp-content/uploads/2026/08/kites-play-designboom-700-500x400-22b08q85r404.jpg" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">Designboom <span class="tag">디자인 전반</span></div>
+            <div class="title">그림이 날아오를 때 — 연(kite)의 아트와 디자인</div>
+            <div class="orig">when drawings take flight: the art and design of kites</div>
+            <div class="summary">예술가와 연 장인들이 하늘을 천장 없는 미술관으로 만든다 — 바람 따라 움직이는 그림들.</div>
+            <div class="date">2026-08-06</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://abduzeedo.com/bona-nova-mateusz-machalski-free-typeface/" data-title="Bona Nova — 폴란드 활자를 되살린 무료 세리프 (Mateusz Machalski)" data-source="Abduzeedo" data-tag="그래픽·브랜딩" data-image="https://cms.abduzeedo.com/sites/default/files/originals/hero_bona-nova-free-font-mateusz-machalski.jpg" data-date="2026-08-06">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://abduzeedo.com/bona-nova-mateusz-machalski-free-typeface/" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://cms.abduzeedo.com/sites/default/files/originals/hero_bona-nova-free-font-mateusz-machalski.jpg" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">Abduzeedo <span class="tag">그래픽·브랜딩</span></div>
+            <div class="title">Bona Nova — 폴란드 활자를 되살린 무료 세리프 (Mateusz Machalski)</div>
+            <div class="orig">Bona Nova Mateusz Machalski Free Typeface</div>
+            <div class="summary">Andrzej Heidrich의 1971년 활자를 디지털로 되살리고 스몰캡과 확장 문자셋을 더한 무료 서체.</div>
+            <div class="date">2026-08-06</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://abduzeedo.com/design-spells-ui-ux-interaction-gallery-showcase/" data-title="Design Spells — 마이크로 인터랙션만 모은 갤러리" data-source="Abduzeedo" data-tag="그래픽·브랜딩" data-image="https://cms.abduzeedo.com/sites/default/files/originals/designspells_hero_mac_1to1_1.jpg" data-date="2026-08-06">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://abduzeedo.com/design-spells-ui-ux-interaction-gallery-showcase/" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://cms.abduzeedo.com/sites/default/files/originals/designspells_hero_mac_1to1_1.jpg" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">Abduzeedo <span class="tag">그래픽·브랜딩</span></div>
+            <div class="title">Design Spells — 마이크로 인터랙션만 모은 갤러리</div>
+            <div class="orig">Design Spells UI UX Interaction Gallery Showcase</div>
+            <div class="summary">마이크로 인터랙션과 섬세한 UI 디테일만 모은 큐레이션 갤러리.</div>
+            <div class="date">2026-08-06</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://www.designboom.com/architecture/inflated-orange-volumes-smash-burger-restaurant-interior-da-bureau-armenia-yerevan-iykyk/" data-title="부풀린 주황 덩어리로 채운 예레반 스매시버거 매장 (DA bureau)" data-source="Designboom" data-tag="디자인 전반" data-image="https://www.designboom.com/wp-content/uploads/2026/08/da-bureau-interior-iykyk-smash-burger-restaurant-yerevan-armenia-designboom-700-2-500x400-22b08q85r399.jpg" data-date="2026-08-06">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://www.designboom.com/architecture/inflated-orange-volumes-smash-burger-restaurant-interior-da-bureau-armenia-yerevan-iykyk/" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://www.designboom.com/wp-content/uploads/2026/08/da-bureau-interior-iykyk-smash-burger-restaurant-yerevan-armenia-designboom-700-2-500x400-22b08q85r399.jpg" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">Designboom <span class="tag">디자인 전반</span></div>
+            <div class="title">부풀린 주황 덩어리로 채운 예레반 스매시버거 매장 (DA bureau)</div>
+            <div class="orig">inflated orange volumes adorn smash burger restaurant’s interior by da bureau in armenia</div>
+            <div class="summary">브랜딩·가구·조명·건축을 하나의 모듈 시스템으로 묶은 IYKYK 매장 인테리어.</div>
+            <div class="date">2026-08-06</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://www.creativebloq.com/art/the-creator-of-halloween-and-the-thing-is-releasing-a-132-page-dystopian-horror-comic-paired-with-a-14-track-synth-metal-album-that-rocks-like-its-1986" data-title="〈할로윈〉·〈더 씽〉 감독의 132쪽 호러 만화 + 신스메탈 앨범" data-source="Creative Bloq" data-tag="실무·툴" data-image="https://cdn.mos.cms.futurecdn.net/f6Zch35KqdpPwgKyW6GsHT-1280-80.jpg" data-date="2026-08-06">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://www.creativebloq.com/art/the-creator-of-halloween-and-the-thing-is-releasing-a-132-page-dystopian-horror-comic-paired-with-a-14-track-synth-metal-album-that-rocks-like-its-1986" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://cdn.mos.cms.futurecdn.net/f6Zch35KqdpPwgKyW6GsHT-1280-80.jpg" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">Creative Bloq <span class="tag">실무·툴</span></div>
+            <div class="title">〈할로윈〉·〈더 씽〉 감독의 132쪽 호러 만화 + 신스메탈 앨범</div>
+            <div class="orig">The creator of Halloween and The Thing is releasing a 132-page dystopian horror comic paired with a 14-track synth metal album that rocks like it&#x27;s 1986</div>
+            <div class="summary">꿈에서 출발한 카펜터의 첫 그래픽노블 — &#x27;Prince of Darkness&#x27;의 고딕 호러를 만화로 옮겼다.</div>
+            <div class="date">2026-08-06</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://www.dezeen.com/2026/08/05/eleven-architecture-preservation-battles-roundup/" data-title="미국 곳곳의 건축 보존 분쟁 11곳" data-source="Dezeen" data-tag="건축·공간" data-image="http://static.dezeen.com/uploads/2025/11/dallas-city-hall-preservation-2025_dezeen_2364_sq-1-411x411.jpg" data-date="2026-08-06">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://www.dezeen.com/2026/08/05/eleven-architecture-preservation-battles-roundup/" target="_blank" rel="noopener">
+          <div class="thumb"><img src="http://static.dezeen.com/uploads/2025/11/dallas-city-hall-preservation-2025_dezeen_2364_sq-1-411x411.jpg" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">Dezeen <span class="tag">건축·공간</span></div>
+            <div class="title">미국 곳곳의 건축 보존 분쟁 11곳</div>
+            <div class="orig">Eleven architecture preservation battles across the US</div>
+            <div class="summary">사리넨의 덜레스 공항 터미널 증축안을 계기로, 진행 중인 보존 논쟁들을 돌아본다.</div>
+            <div class="date">2026-08-06</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://abduzeedo.com/zwqy-lab-redefines-artistic-identity-artevive-branding/" data-title="Artevive — Zwqy.lab이 만든 예술 브랜드 아이덴티티" data-source="Abduzeedo" data-tag="그래픽·브랜딩" data-image="https://cms.abduzeedo.com/sites/default/files/originals/artevive-rebranding-design_0.jpg" data-date="2026-08-06">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://abduzeedo.com/zwqy-lab-redefines-artistic-identity-artevive-branding/" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://cms.abduzeedo.com/sites/default/files/originals/artevive-rebranding-design_0.jpg" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">Abduzeedo <span class="tag">그래픽·브랜딩</span></div>
+            <div class="title">Artevive — Zwqy.lab이 만든 예술 브랜드 아이덴티티</div>
+            <div class="orig">Zwqy .lab Redefines Artistic Identity with Artevive Branding</div>
+            <div class="summary">기하학적 심벌을 조합한 전략적 아트 스튜디오 아이덴티티.</div>
+            <div class="date">2026-08-06</div>
+          </div>
+        </a>
+      </div>
+      <div class="card" data-link="https://www.designboom.com/technology/transparent-cd-player-syitren-album-artwork-motion-rm1/" data-title="SYITREN 투명 CD 플레이어 — 앨범 아트를 다시 돌게 하다" data-source="Designboom" data-tag="디자인 전반" data-image="https://www.designboom.com/wp-content/uploads/2026/08/syitren-rm1-transparent-cd-player-designboom-700-500x400-22b08q85r166.jpg" data-date="2026-08-06">
+        <button class="fav" type="button" title="이건 마음에 들어요">♥</button>
+        <button class="del" type="button" title="이건 안 볼래요">✕</button>
+        <a class="go" href="https://www.designboom.com/technology/transparent-cd-player-syitren-album-artwork-motion-rm1/" target="_blank" rel="noopener">
+          <div class="thumb"><img src="https://www.designboom.com/wp-content/uploads/2026/08/syitren-rm1-transparent-cd-player-designboom-700-500x400-22b08q85r166.jpg" alt="" loading="lazy"></div>
+          <div class="meta">
+            <div class="src">Designboom <span class="tag">디자인 전반</span></div>
+            <div class="title">SYITREN 투명 CD 플레이어 — 앨범 아트를 다시 돌게 하다</div>
+            <div class="orig">transparent CD player by SYITREN puts album artwork back in motion</div>
+            <div class="summary">회로가 비치는 아크릴 사각 플레이어 — 블루투스나 AUX로 외부 스피커에 소리를 보낸다.</div>
+            <div class="date">2026-08-06</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    출처: Muzli · Dezeen · Designboom · Abduzeedo · Creative Bloq · Design Milk · Typewolf · Awwwards<br>
+    썸네일과 제목은 각 매체 원문 링크로 연결됩니다 · 평일 오후 12시 30분 자동 수집
+  </div>
+</div>
+
+<div class="bar" id="bar">
+  <span id="bar-fav-wrap"><b class="n-fav" id="bar-fav">0</b>개 찜했어요</span>
+  <span id="bar-del-wrap"><b id="bar-del">0</b>개 지웠어요</span>
+  <span id="bar-msg"></span>
+  <button type="button" id="bar-only">찜만 보기</button>
+  <button type="button" id="bar-undo">되돌리기</button>
+  <button type="button" id="bar-save">저장</button>
+</div>
+
+<script>
+(function () {
+  // ✕(제외)와 ♥(찜)은 같은 길을 탄다 — localStorage에 쌓았다가 `저장`으로 한 파일에 내려받고,
+  // 다음 수집 때 수집.py가 주워가 .excluded.json / .liked.json에 누적한다.
+  var KEY_EX = 'moa-excluded', KEY_LI = 'moa-liked', KEY_UN = 'moa-unliked';
+
+  function load(key) {
+    try { return JSON.parse(localStorage.getItem(key)) || []; } catch (e) { return []; }
+  }
+  function persist() {
+    try {
+      localStorage.setItem(KEY_EX, JSON.stringify(excluded));
+      localStorage.setItem(KEY_LI, JSON.stringify(liked));
+      localStorage.setItem(KEY_UN, JSON.stringify(unliked));
+    } catch (e) {}
+  }
+
+  var excluded = load(KEY_EX);
+  var liked = load(KEY_LI);
+  var unliked = load(KEY_UN);   // 이미 서버에 반영된 찜을 취소한 링크
+
+  var isEx = {}, isLi = {};
+  excluded.forEach(function (e) { isEx[e.link] = true; });
+  liked.forEach(function (e) { isLi[e.link] = true; });
+
+  var undoStack = [];
+  var onlyFav = false;
+
+  var cards = [].slice.call(document.querySelectorAll('.card'));
+  var blocks = [].slice.call(document.querySelectorAll('.block'));
+
+  var bar = document.getElementById('bar');
+  var favWrap = document.getElementById('bar-fav-wrap');
+  var delWrap = document.getElementById('bar-del-wrap');
+  var favEl = document.getElementById('bar-fav');
+  var delEl = document.getElementById('bar-del');
+  var onlyBtn = document.getElementById('bar-only');
+  var undoBtn = document.getElementById('bar-undo');
+  var msgEl = document.getElementById('bar-msg');
+
+  function rowOf(card) {
+    return {
+      link: card.dataset.link,
+      title: card.dataset.title,
+      source: card.dataset.source,
+      tag: card.dataset.tag,
+      image: card.dataset.image || '',
+      date: card.dataset.date || '',
+      at: new Date().toISOString().slice(0, 10)
+    };
+  }
+
+  function paint() {
+    // 찜을 다 취소하면 필터를 스스로 푼다 — 안 그러면 빈 화면에 바까지 사라져 빠져나올 길이 없다
+    if (onlyFav && !liked.length) onlyFav = false;
+    cards.forEach(function (card) {
+      var link = card.dataset.link;
+      var fav = !!isLi[link];
+      card.classList.toggle('is-fav', fav);
+      card.style.display = (!isEx[link] && (!onlyFav || fav)) ? '' : 'none';
+    });
+    // 필터로 텅 빈 칸은 제목만 남지 않게 통째로 접는다
+    blocks.forEach(function (block) {
+      var alive = [].slice.call(block.querySelectorAll('.card')).some(function (c) {
+        return c.style.display !== 'none';
+      });
+      block.style.display = alive ? '' : 'none';
+    });
+
+    favEl.textContent = liked.length;
+    delEl.textContent = excluded.length;
+    favWrap.style.display = liked.length ? '' : 'none';
+    delWrap.style.display = excluded.length ? '' : 'none';
+    onlyBtn.style.display = liked.length ? '' : 'none';
+    onlyBtn.textContent = onlyFav ? '전체 보기' : '찜만 보기';
+    onlyBtn.classList.toggle('on', onlyFav);
+    undoBtn.style.display = undoStack.length ? '' : 'none';
+    bar.style.display = (liked.length || excluded.length) ? 'flex' : 'none';
+  }
+
+  function note(text) {
+    msgEl.textContent = text;
+    clearTimeout(note.t);
+    note.t = setTimeout(function () { msgEl.textContent = ''; }, 6000);
+  }
+
+  cards.forEach(function (card) {
+    var link = card.dataset.link;
+
+    card.querySelector('.del').addEventListener('click', function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      if (isEx[link]) return;
+      isEx[link] = true;
+      excluded.push(rowOf(card));
+      undoStack.push({ kind: 'del', link: link });
+      persist();
+      paint();
+    });
+
+    card.querySelector('.fav').addEventListener('click', function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      if (isLi[link]) {                       // 찜 취소
+        var i = liked.findIndex(function (e) { return e.link === link; });
+        var row = i >= 0 ? liked.splice(i, 1)[0] : rowOf(card);
+        delete isLi[link];
+        var had = unliked.indexOf(link) >= 0;
+        if (!had) unliked.push(link);
+        undoStack.push({ kind: 'unfav', link: link, row: row, wasUnliked: had });
+      } else {                                // 찜
+        liked.push(rowOf(card));
+        isLi[link] = true;
+        var j = unliked.indexOf(link);
+        var wasUnliked = j >= 0;
+        if (wasUnliked) unliked.splice(j, 1);
+        undoStack.push({ kind: 'fav', link: link, wasUnliked: wasUnliked });
+      }
+      persist();
+      paint();
+    });
+  });
+
+  undoBtn.addEventListener('click', function () {
+    var last = undoStack.pop();
+    if (!last) return;
+    if (last.kind === 'del') {
+      excluded = excluded.filter(function (e) { return e.link !== last.link; });
+      delete isEx[last.link];
+    } else if (last.kind === 'fav') {
+      liked = liked.filter(function (e) { return e.link !== last.link; });
+      delete isLi[last.link];
+      if (last.wasUnliked && unliked.indexOf(last.link) < 0) unliked.push(last.link);
+    } else if (last.kind === 'unfav') {
+      liked.push(last.row);
+      isLi[last.link] = true;
+      if (!last.wasUnliked) {
+        var k = unliked.indexOf(last.link);
+        if (k >= 0) unliked.splice(k, 1);
+      }
+    }
+    persist();
+    paint();
+  });
+
+  onlyBtn.addEventListener('click', function () {
+    onlyFav = !onlyFav;
+    paint();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  document.getElementById('bar-save').addEventListener('click', function () {
+    var payload = { excluded: excluded, liked: liked, unliked: unliked };
+    var blob = new Blob([JSON.stringify(payload, null, 1)], { type: 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = '모아-취향.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
+    note('다운로드 폴더에 저장했어요. 다음 수집 때 반영돼요.');
+  });
+
+  paint();
+})();
+</script>
+</body>
+</html>
