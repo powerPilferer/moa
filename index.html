@@ -192,7 +192,7 @@
 
   <div class="brand"><svg class="moa-char" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 72" width="26" height="26" shape-rendering="crispEdges"><g fill="var(--accent)"><rect x="16" y="0" width="8" height="8"/><rect x="24" y="0" width="8" height="8"/><rect x="32" y="0" width="8" height="8"/><rect x="40" y="0" width="8" height="8"/><rect x="48" y="0" width="8" height="8"/><rect x="56" y="0" width="8" height="8"/><rect x="64" y="0" width="8" height="8"/><rect x="72" y="0" width="8" height="8"/><rect x="8" y="8" width="8" height="8"/><rect x="16" y="8" width="8" height="8"/><rect x="24" y="8" width="8" height="8"/><rect x="32" y="8" width="8" height="8"/><rect x="40" y="8" width="8" height="8"/><rect x="48" y="8" width="8" height="8"/><rect x="56" y="8" width="8" height="8"/><rect x="64" y="8" width="8" height="8"/><rect x="72" y="8" width="8" height="8"/><rect x="80" y="8" width="8" height="8"/><rect x="0" y="16" width="8" height="8"/><rect x="8" y="16" width="8" height="8"/><rect x="16" y="16" width="8" height="8"/><rect x="24" y="16" width="8" height="8"/><rect x="32" y="16" width="8" height="8"/><rect x="40" y="16" width="8" height="8"/><rect x="48" y="16" width="8" height="8"/><rect x="56" y="16" width="8" height="8"/><rect x="64" y="16" width="8" height="8"/><rect x="72" y="16" width="8" height="8"/><rect x="80" y="16" width="8" height="8"/><rect x="88" y="16" width="8" height="8"/><rect x="0" y="24" width="8" height="8"/><rect x="8" y="24" width="8" height="8"/><rect x="16" y="24" width="8" height="8"/><rect x="32" y="24" width="8" height="8"/><rect x="40" y="24" width="8" height="8"/><rect x="48" y="24" width="8" height="8"/><rect x="56" y="24" width="8" height="8"/><rect x="72" y="24" width="8" height="8"/><rect x="80" y="24" width="8" height="8"/><rect x="88" y="24" width="8" height="8"/><rect x="0" y="32" width="8" height="8"/><rect x="8" y="32" width="8" height="8"/><rect x="16" y="32" width="8" height="8"/><rect x="32" y="32" width="8" height="8"/><rect x="40" y="32" width="8" height="8"/><rect x="48" y="32" width="8" height="8"/><rect x="56" y="32" width="8" height="8"/><rect x="72" y="32" width="8" height="8"/><rect x="80" y="32" width="8" height="8"/><rect x="88" y="32" width="8" height="8"/><rect x="0" y="40" width="8" height="8"/><rect x="8" y="40" width="8" height="8"/><rect x="16" y="40" width="8" height="8"/><rect x="24" y="40" width="8" height="8"/><rect x="32" y="40" width="8" height="8"/><rect x="40" y="40" width="8" height="8"/><rect x="48" y="40" width="8" height="8"/><rect x="56" y="40" width="8" height="8"/><rect x="64" y="40" width="8" height="8"/><rect x="72" y="40" width="8" height="8"/><rect x="80" y="40" width="8" height="8"/><rect x="88" y="40" width="8" height="8"/><rect x="8" y="48" width="8" height="8"/><rect x="16" y="48" width="8" height="8"/><rect x="24" y="48" width="8" height="8"/><rect x="32" y="48" width="8" height="8"/><rect x="40" y="48" width="8" height="8"/><rect x="48" y="48" width="8" height="8"/><rect x="56" y="48" width="8" height="8"/><rect x="64" y="48" width="8" height="8"/><rect x="72" y="48" width="8" height="8"/><rect x="80" y="48" width="8" height="8"/><rect x="16" y="56" width="8" height="8"/><rect x="24" y="56" width="8" height="8"/><rect x="64" y="56" width="8" height="8"/><rect x="72" y="56" width="8" height="8"/><rect x="8" y="64" width="8" height="8"/><rect x="16" y="64" width="8" height="8"/><rect x="72" y="64" width="8" height="8"/><rect x="80" y="64" width="8" height="8"/></g><g class="moa-eyes" fill="var(--card)"><rect x="24" y="24" width="8" height="8"/><rect x="64" y="24" width="8" height="8"/><rect x="24" y="32" width="8" height="8"/><rect x="64" y="32" width="8" height="8"/></g><g class="moa-spark" fill="#f7b731"><rect x="0" y="0" width="8" height="8"/><rect x="88" y="0" width="8" height="8"/></g></svg><span>모아</span></div>
   <h1 class="page-title">A daily dose of design<br>and photography references</h1>
-  <div class="hello-sub">매일 13곳에서 볼 만한 것만 모아 와요 · <span id="stamp">08/18 (Tue) 16:06</span> 수집 · 새 글 0건</div>
+  <div class="hello-sub">매일 13곳에서 볼 만한 것만 모아 와요 · <span id="stamp">08/18 (Tue) 16:15</span> 수집 · 새 글 0건</div>
 
   <div class="tabs">
     <button type="button" class="tab active" id="tab-btn-ref">레퍼런스</button>
@@ -2089,18 +2089,9 @@
       paintPins();
     }).catch(function () { /* 오프라인 — 캐시로 표시 */ });
   }
-  // 옛 저장 방식에서 이 기기에만 남아 있던 기록을 서버로 한 번 올려보낸다
-  (function migrateOnce() {
-    var done = null;
-    try { done = localStorage.getItem('moa-pref-synced'); } catch (e) {}
-    if (done) return;
-    excluded.forEach(function (e) { if (e.link) sendPref('exclude', e.link, e); });
-    liked.forEach(function (e) { if (e.link) sendPref('like', e.link, e); });
-    unliked.forEach(function (l) { sendPref('unlike', l); });
-    pinLiked.forEach(function (p) { if (p.id) sendPref('pinlike', p.id, p); });
-    pinUnliked.forEach(function (i) { sendPref('pinunlike', i); });
-    try { localStorage.setItem('moa-pref-synced', '1'); } catch (e) {}
-  })();
+  // (2026-08-18) 옛 localStorage 기록을 서버로 올리던 이사 장치는 제거했다 —
+  // 기기마다 남은 옛 찜 캐시를 최신 시각으로 재등록해서 방금 한 취소를 되살리는 부작용이 있었다.
+  // 서버 시딩은 맥에서 이미 완료됐고, 이제 서버가 유일한 원본이다.
 
   paint();
   setTimeout(syncPrefs, 800);
