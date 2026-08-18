@@ -143,8 +143,20 @@
     .moa-char .moa-winkalt { animation: none; }
   }
   .bar svg { width:20px; height:auto; flex-shrink:0; }
+  .bar span, .bar button { white-space:nowrap; }
   .bar b { color:var(--danger); }
   .bar b.n-fav { color:var(--like); }
+  .bar-stat .w { font-style:normal; }
+  /* 좁은 화면: "♥18 ✕20" 압축 표기 + 안내문 숨김 */
+  @media (max-width: 640px) {
+    .bar { gap:9px; padding:9px 11px 9px 14px; bottom:14px; font-size:12.5px; }
+    .bar-stat .w { display:none; }
+    .bar-stat::before { margin-right:3px; font-size:12px; }
+    .st-like::before { content:'♥'; color:var(--like); }
+    .st-del::before { content:'✕'; color:var(--danger); }
+    #bar-msg { display:none; }
+    .bar button { padding:8px 13px; }
+  }
   .bar button {
     border:0; border-radius:999px; cursor:pointer; font-size:12.5px; font-weight:600;
     padding:7px 14px; font-family:inherit;
@@ -180,7 +192,7 @@
 
   <div class="brand"><svg class="moa-char" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 72" width="26" height="26" shape-rendering="crispEdges"><g fill="var(--accent)"><rect x="16" y="0" width="8" height="8"/><rect x="24" y="0" width="8" height="8"/><rect x="32" y="0" width="8" height="8"/><rect x="40" y="0" width="8" height="8"/><rect x="48" y="0" width="8" height="8"/><rect x="56" y="0" width="8" height="8"/><rect x="64" y="0" width="8" height="8"/><rect x="72" y="0" width="8" height="8"/><rect x="8" y="8" width="8" height="8"/><rect x="16" y="8" width="8" height="8"/><rect x="24" y="8" width="8" height="8"/><rect x="32" y="8" width="8" height="8"/><rect x="40" y="8" width="8" height="8"/><rect x="48" y="8" width="8" height="8"/><rect x="56" y="8" width="8" height="8"/><rect x="64" y="8" width="8" height="8"/><rect x="72" y="8" width="8" height="8"/><rect x="80" y="8" width="8" height="8"/><rect x="0" y="16" width="8" height="8"/><rect x="8" y="16" width="8" height="8"/><rect x="16" y="16" width="8" height="8"/><rect x="24" y="16" width="8" height="8"/><rect x="32" y="16" width="8" height="8"/><rect x="40" y="16" width="8" height="8"/><rect x="48" y="16" width="8" height="8"/><rect x="56" y="16" width="8" height="8"/><rect x="64" y="16" width="8" height="8"/><rect x="72" y="16" width="8" height="8"/><rect x="80" y="16" width="8" height="8"/><rect x="88" y="16" width="8" height="8"/><rect x="0" y="24" width="8" height="8"/><rect x="8" y="24" width="8" height="8"/><rect x="16" y="24" width="8" height="8"/><rect x="32" y="24" width="8" height="8"/><rect x="40" y="24" width="8" height="8"/><rect x="48" y="24" width="8" height="8"/><rect x="56" y="24" width="8" height="8"/><rect x="72" y="24" width="8" height="8"/><rect x="80" y="24" width="8" height="8"/><rect x="88" y="24" width="8" height="8"/><rect x="0" y="32" width="8" height="8"/><rect x="8" y="32" width="8" height="8"/><rect x="16" y="32" width="8" height="8"/><rect x="32" y="32" width="8" height="8"/><rect x="40" y="32" width="8" height="8"/><rect x="48" y="32" width="8" height="8"/><rect x="56" y="32" width="8" height="8"/><rect x="72" y="32" width="8" height="8"/><rect x="80" y="32" width="8" height="8"/><rect x="88" y="32" width="8" height="8"/><rect x="0" y="40" width="8" height="8"/><rect x="8" y="40" width="8" height="8"/><rect x="16" y="40" width="8" height="8"/><rect x="24" y="40" width="8" height="8"/><rect x="32" y="40" width="8" height="8"/><rect x="40" y="40" width="8" height="8"/><rect x="48" y="40" width="8" height="8"/><rect x="56" y="40" width="8" height="8"/><rect x="64" y="40" width="8" height="8"/><rect x="72" y="40" width="8" height="8"/><rect x="80" y="40" width="8" height="8"/><rect x="88" y="40" width="8" height="8"/><rect x="8" y="48" width="8" height="8"/><rect x="16" y="48" width="8" height="8"/><rect x="24" y="48" width="8" height="8"/><rect x="32" y="48" width="8" height="8"/><rect x="40" y="48" width="8" height="8"/><rect x="48" y="48" width="8" height="8"/><rect x="56" y="48" width="8" height="8"/><rect x="64" y="48" width="8" height="8"/><rect x="72" y="48" width="8" height="8"/><rect x="80" y="48" width="8" height="8"/><rect x="16" y="56" width="8" height="8"/><rect x="24" y="56" width="8" height="8"/><rect x="64" y="56" width="8" height="8"/><rect x="72" y="56" width="8" height="8"/><rect x="8" y="64" width="8" height="8"/><rect x="16" y="64" width="8" height="8"/><rect x="72" y="64" width="8" height="8"/><rect x="80" y="64" width="8" height="8"/></g><g class="moa-eyes" fill="var(--card)"><rect x="24" y="24" width="8" height="8"/><rect x="64" y="24" width="8" height="8"/><rect x="24" y="32" width="8" height="8"/><rect x="64" y="32" width="8" height="8"/></g><g class="moa-spark" fill="#f7b731"><rect x="0" y="0" width="8" height="8"/><rect x="88" y="0" width="8" height="8"/></g></svg><span>모아</span></div>
   <h1 class="page-title">A daily dose of design<br>and photography references</h1>
-  <div class="hello-sub">매일 13곳에서 볼 만한 것만 모아 와요 · <span id="stamp">08/18 (Tue) 15:35</span> 수집 · 새 글 0건</div>
+  <div class="hello-sub">매일 13곳에서 볼 만한 것만 모아 와요 · <span id="stamp">08/18 (Tue) 16:00</span> 수집 · 새 글 0건</div>
 
   <div class="tabs">
     <button type="button" class="tab active" id="tab-btn-ref">레퍼런스</button>
@@ -1753,8 +1765,8 @@
 
 <div class="bar" id="bar">
   <svg class="moa-char" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 72" width="26" height="26" shape-rendering="crispEdges"><g fill="var(--accent)"><rect x="16" y="0" width="8" height="8"/><rect x="24" y="0" width="8" height="8"/><rect x="32" y="0" width="8" height="8"/><rect x="40" y="0" width="8" height="8"/><rect x="48" y="0" width="8" height="8"/><rect x="56" y="0" width="8" height="8"/><rect x="64" y="0" width="8" height="8"/><rect x="72" y="0" width="8" height="8"/><rect x="8" y="8" width="8" height="8"/><rect x="16" y="8" width="8" height="8"/><rect x="24" y="8" width="8" height="8"/><rect x="32" y="8" width="8" height="8"/><rect x="40" y="8" width="8" height="8"/><rect x="48" y="8" width="8" height="8"/><rect x="56" y="8" width="8" height="8"/><rect x="64" y="8" width="8" height="8"/><rect x="72" y="8" width="8" height="8"/><rect x="80" y="8" width="8" height="8"/><rect x="0" y="16" width="8" height="8"/><rect x="8" y="16" width="8" height="8"/><rect x="16" y="16" width="8" height="8"/><rect x="24" y="16" width="8" height="8"/><rect x="32" y="16" width="8" height="8"/><rect x="40" y="16" width="8" height="8"/><rect x="48" y="16" width="8" height="8"/><rect x="56" y="16" width="8" height="8"/><rect x="64" y="16" width="8" height="8"/><rect x="72" y="16" width="8" height="8"/><rect x="80" y="16" width="8" height="8"/><rect x="88" y="16" width="8" height="8"/><rect x="0" y="24" width="8" height="8"/><rect x="8" y="24" width="8" height="8"/><rect x="16" y="24" width="8" height="8"/><rect x="32" y="24" width="8" height="8"/><rect x="40" y="24" width="8" height="8"/><rect x="48" y="24" width="8" height="8"/><rect x="56" y="24" width="8" height="8"/><rect x="72" y="24" width="8" height="8"/><rect x="80" y="24" width="8" height="8"/><rect x="88" y="24" width="8" height="8"/><rect x="0" y="32" width="8" height="8"/><rect x="8" y="32" width="8" height="8"/><rect x="16" y="32" width="8" height="8"/><rect x="32" y="32" width="8" height="8"/><rect x="40" y="32" width="8" height="8"/><rect x="48" y="32" width="8" height="8"/><rect x="56" y="32" width="8" height="8"/><rect x="72" y="32" width="8" height="8"/><rect x="80" y="32" width="8" height="8"/><rect x="88" y="32" width="8" height="8"/><rect x="0" y="40" width="8" height="8"/><rect x="8" y="40" width="8" height="8"/><rect x="16" y="40" width="8" height="8"/><rect x="24" y="40" width="8" height="8"/><rect x="32" y="40" width="8" height="8"/><rect x="40" y="40" width="8" height="8"/><rect x="48" y="40" width="8" height="8"/><rect x="56" y="40" width="8" height="8"/><rect x="64" y="40" width="8" height="8"/><rect x="72" y="40" width="8" height="8"/><rect x="80" y="40" width="8" height="8"/><rect x="88" y="40" width="8" height="8"/><rect x="8" y="48" width="8" height="8"/><rect x="16" y="48" width="8" height="8"/><rect x="24" y="48" width="8" height="8"/><rect x="32" y="48" width="8" height="8"/><rect x="40" y="48" width="8" height="8"/><rect x="48" y="48" width="8" height="8"/><rect x="56" y="48" width="8" height="8"/><rect x="64" y="48" width="8" height="8"/><rect x="72" y="48" width="8" height="8"/><rect x="80" y="48" width="8" height="8"/><rect x="16" y="56" width="8" height="8"/><rect x="24" y="56" width="8" height="8"/><rect x="64" y="56" width="8" height="8"/><rect x="72" y="56" width="8" height="8"/><rect x="8" y="64" width="8" height="8"/><rect x="16" y="64" width="8" height="8"/><rect x="72" y="64" width="8" height="8"/><rect x="80" y="64" width="8" height="8"/></g><g class="moa-eyes" fill="var(--card)"><rect x="24" y="24" width="8" height="8"/><rect x="64" y="24" width="8" height="8"/><rect x="24" y="32" width="8" height="8"/><rect x="64" y="32" width="8" height="8"/></g><g class="moa-spark" fill="#f7b731"><rect x="0" y="0" width="8" height="8"/><rect x="88" y="0" width="8" height="8"/></g></svg>
-  <span id="bar-fav-wrap"><b class="n-fav" id="bar-fav">0</b>개 찜했어요</span>
-  <span id="bar-del-wrap"><b id="bar-del">0</b>개 지웠어요</span>
+  <span id="bar-fav-wrap" class="bar-stat st-like"><b class="n-fav" id="bar-fav">0</b><i class="w">개 찜했어요</i></span>
+  <span id="bar-del-wrap" class="bar-stat st-del"><b id="bar-del">0</b><i class="w">개 지웠어요</i></span>
   <span id="bar-msg"></span>
   <button type="button" id="bar-only">찜만 보기</button>
   <button type="button" id="bar-undo">되돌리기</button>
@@ -1811,6 +1823,8 @@
     card._srv = !!(likedBlock && likedBlock.contains(card));   // 밀려난 찜인지
   });
   var synced = false;   // 서버 상태를 한 번이라도 받아왔는지
+  // 이 기기에서 방금 만진 항목 — 서버 동기화가 갓 누른 클릭을 되돌리지 않게 지킨다
+  var touchedCard = {}, touchedPin = {};
   function srvAlive(link) { return synced ? !!isLi[link] : unliked.indexOf(link) < 0; }
 
   var bar = document.getElementById('bar');
@@ -1895,6 +1909,7 @@
       isEx[link] = true;
       excluded.push(rowOf(card));
       undoStack.push({ kind: 'del', link: link });
+      touchedCard[link] = 1;
       sendPref('exclude', link, rowOf(card));
       persist();
       paint();
@@ -1903,6 +1918,7 @@
     card.querySelector('.fav').addEventListener('click', function (ev) {
       ev.preventDefault();
       ev.stopPropagation();
+      touchedCard[link] = 1;
       if (isLi[link] || (card._srv && srvAlive(link))) {   // 찜 취소
         var i = liked.findIndex(function (e) { return e.link === link; });
         var row = i >= 0 ? liked.splice(i, 1)[0] : rowOf(card);
@@ -1928,6 +1944,7 @@
   undoBtn.addEventListener('click', function () {
     var last = undoStack.pop();
     if (!last) return;
+    touchedCard[last.link] = 1;
     if (last.kind === 'del') {
       excluded = excluded.filter(function (e) { return e.link !== last.link; });
       delete isEx[last.link];
@@ -2001,6 +2018,7 @@
     btn.addEventListener('click', function (ev) {
       ev.preventDefault();
       ev.stopPropagation();
+      touchedPin[id] = 1;
       if (el.classList.contains('is-fav')) {            // 찜 해제
         el.classList.remove('is-fav');
         pinLiked = pinLiked.filter(function (p) { return p.id !== id; });
@@ -2038,9 +2056,24 @@
   function syncPrefs() {
     fetch(PREF_URL, { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (d) {
       if (!d || !d.ok) return;
-      excluded = d.excluded || [];
-      liked = d.liked || [];
-      pinLiked = d.pinLiked || [];
+      var newLiked = d.liked || [], newEx = d.excluded || [], newPins = d.pinLiked || [];
+      // 이 기기에서 방금 만진 항목은 로컬 상태를 우선한다 — 서버 기록이 아직 안 닿았을 수 있다
+      Object.keys(touchedCard).forEach(function (link) {
+        var keepLi = liked.find(function (e) { return e.link === link; });
+        var keepEx = excluded.find(function (e) { return e.link === link; });
+        newLiked = newLiked.filter(function (e) { return e.link !== link; });
+        newEx = newEx.filter(function (e) { return e.link !== link; });
+        if (isLi[link]) newLiked.push(keepLi || { link: link });
+        if (isEx[link]) newEx.push(keepEx || { link: link });
+      });
+      Object.keys(touchedPin).forEach(function (id) {
+        var keep = pinLiked.find(function (p) { return p.id === id; });
+        newPins = newPins.filter(function (p) { return p.id !== id; });
+        if (isPL[id]) newPins.push(keep || { id: id });
+      });
+      excluded = newEx;
+      liked = newLiked;
+      pinLiked = newPins;
       unliked = [];
       pinUnliked = [];
       isEx = {}; isLi = {}; isPL = {};
